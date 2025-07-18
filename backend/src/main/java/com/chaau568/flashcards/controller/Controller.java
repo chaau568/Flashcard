@@ -19,21 +19,20 @@ import com.chaau568.flashcards.entity.Deck;
 import com.chaau568.flashcards.entity.User;
 import com.chaau568.flashcards.response.ApiResponse;
 import com.chaau568.flashcards.response.ApiResponseWithData;
-import com.chaau568.flashcards.service.CardServiceImplement;
-import com.chaau568.flashcards.service.DeckServiceImplement;
-import com.chaau568.flashcards.service.UserServiceImplement;
+import com.chaau568.flashcards.service.CardService;
+import com.chaau568.flashcards.service.DeckService;
+import com.chaau568.flashcards.service.UserService;
 
 @CrossOrigin(origins = "http://localhost:5137")
 @RestController
 @RequestMapping("/flashcard")
 
 public class Controller {
-    private final UserServiceImplement userService;
-    private final DeckServiceImplement deckService;
-    private final CardServiceImplement cardService;
+    private final UserService userService;
+    private final DeckService deckService;
+    private final CardService cardService;
 
-    public Controller(UserServiceImplement userService, DeckServiceImplement deckService,
-            CardServiceImplement cardService) {
+    public Controller(UserService userService, DeckService deckService, CardService cardService) {
         this.userService = userService;
         this.deckService = deckService;
         this.cardService = cardService;
