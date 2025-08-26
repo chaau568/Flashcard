@@ -1,7 +1,10 @@
 package com.chaau568.flashcards.controller;
 
 import java.util.List;
+import java.util.Map;
 
+import org.springframework.boot.autoconfigure.graphql.GraphQlProperties.Http;
+import org.springframework.boot.web.server.MimeMappings.Mapping;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -22,6 +25,8 @@ import com.chaau568.flashcards.response.ApiResponseWithData;
 import com.chaau568.flashcards.service.CardService;
 import com.chaau568.flashcards.service.DeckService;
 import com.chaau568.flashcards.service.UserService;
+
+import jakarta.servlet.http.HttpSession;
 
 @CrossOrigin(origins = "http://localhost:5137")
 @RestController
@@ -48,10 +53,20 @@ public class Controller {
     // User
     @PostMapping("/register")
     public ResponseEntity<ApiResponse> createAccount(@RequestBody User newUser) {
-        // userService.createAccount(newUser);
+        userService.createAccount(newUser);
         System.out.println(newUser);
         ApiResponse response = new ApiResponse("User created successfully.", HttpStatus.CREATED.value());
         return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<ApiResponse> login(@RequestBody Map<String, String> user, HttpSession session) {
+        String username = user.get("username");
+        String password = user.get("password");
+        userService.login(username, password);
+        session.setAttribute("username", username);
+        ApiResponse response = new ApiResponse("User logined successfully.", HttpStatus.OK.value());
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     // @PutMapping("/user/update/{id}/{username}/{password}")

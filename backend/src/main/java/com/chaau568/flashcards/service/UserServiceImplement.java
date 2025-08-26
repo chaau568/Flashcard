@@ -1,27 +1,19 @@
 package com.chaau568.flashcards.service;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
-import javax.crypto.Cipher;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
-
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.chaau568.flashcards.encrypt.RSAUtils;
 import com.chaau568.flashcards.entity.Deck;
-import com.chaau568.flashcards.entity.HybridPayload;
 import com.chaau568.flashcards.entity.User;
+import com.chaau568.flashcards.exception.PasswordWrongException;
 import com.chaau568.flashcards.exception.UserNotFoundException;
 import com.chaau568.flashcards.exception.UsernameAlreadyExistsException;
 import com.chaau568.flashcards.repository.UserRepository;
-
-import io.jsonwebtoken.lang.Arrays;
 
 @Service
 
@@ -43,6 +35,20 @@ public class UserServiceImplement implements UserService {
                             "Username '" + userExists.getUsername() + "' already exists.");
                 }, () -> {
                     userRepository.save(newUser);
+                });
+    }
+
+    @Override
+    public void login(String username, String password) {
+        userRepository.findByUsername(username).ifPresentOrElse(
+                userExists -> {
+                    if (!userExists.getPassword().equals(password)) {
+                        throw new PasswordWrongException(
+                                "Password '" + password + "' was incorrect.");
+                    }
+                }, () -> {
+                    throw new UserNotFoundException(
+                            "User with name '" + username + "' was not found.");
                 });
     }
 

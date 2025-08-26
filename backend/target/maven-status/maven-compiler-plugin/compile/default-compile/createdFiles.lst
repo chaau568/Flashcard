@@ -2,12 +2,13 @@ com\chaau568\flashcards\service\DeckService.class
 com\chaau568\flashcards\exception\CardException.class
 com\chaau568\flashcards\FlashcardsApplication.class
 com\chaau568\flashcards\service\DeckServiceImplement.class
-com\chaau568\flashcards\service\CardServiceImplement.class
 com\chaau568\flashcards\exception\UserNotFoundException.class
+com\chaau568\flashcards\service\CardServiceImplement.class
+com\chaau568\flashcards\config\WebConfig.class
 com\chaau568\flashcards\exception\CardDontHavePermissionException.class
 com\chaau568\flashcards\response\ApiResponseWithData.class
-com\chaau568\flashcards\service\UserService.class
 com\chaau568\flashcards\exception\UserException.class
+com\chaau568\flashcards\service\UserService.class
 com\chaau568\flashcards\exception\DeckDontHavePermissionException.class
 com\chaau568\flashcards\exception\PermissionException.class
 com\chaau568\flashcards\config\SecurityConfig.class
@@ -24,5 +25,5 @@ com\chaau568\flashcards\exception\CardNotFoundException.class
 com\chaau568\flashcards\exception\UsernameAlreadyExistsException.class
 com\chaau568\flashcards\controller\Controller.class
 com\chaau568\flashcards\entity\Card.class
-com\chaau568\flashcards\service\UserServiceImplement.class
 com\chaau568\flashcards\exception\DeckNotFoundException.class
+com\chaau568\flashcards\service\UserServiceImplement.class

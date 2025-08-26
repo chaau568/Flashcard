@@ -7,6 +7,8 @@ import com.chaau568.flashcards.entity.User;
 public interface UserService {
     void createAccount(User newUser);
 
+    void login(String username, String password);
+
     void deleteAccount(String userId);
 
     void changeUsername(String userId, String newUsername);
