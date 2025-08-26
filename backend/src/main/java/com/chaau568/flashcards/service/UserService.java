@@ -1,6 +1,7 @@
 package com.chaau568.flashcards.service;
 
 import com.chaau568.flashcards.entity.Deck;
+import com.chaau568.flashcards.entity.HybridPayload;
 import com.chaau568.flashcards.entity.User;
 
 public interface UserService {

@@ -46,13 +46,13 @@ public class Controller {
     }
 
     // User
-    // @PostMapping("/user/register")
-    // public ResponseEntity<ApiResponse> registerUser(@RequestBody User newUser) {
-    // userService.createUser(newUser);
-    // ApiResponse response = new ApiResponse("User registered successfully",
-    // HttpStatus.CREATED.value());
-    // return new ResponseEntity<>(response, HttpStatus.CREATED);
-    // }
+    @PostMapping("/register")
+    public ResponseEntity<ApiResponse> createAccount(@RequestBody User newUser) {
+        // userService.createAccount(newUser);
+        System.out.println(newUser);
+        ApiResponse response = new ApiResponse("User created successfully.", HttpStatus.CREATED.value());
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
 
     // @PutMapping("/user/update/{id}/{username}/{password}")
     // public ResponseEntity<ApiResponse> updateUser(@PathVariable String id,

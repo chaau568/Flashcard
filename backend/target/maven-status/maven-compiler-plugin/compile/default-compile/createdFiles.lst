@@ -13,8 +13,8 @@ com\chaau568\flashcards\exception\PermissionException.class
 com\chaau568\flashcards\config\SecurityConfig.class
 com\chaau568\flashcards\response\ApiResponse.class
 com\chaau568\flashcards\exception\DeckException.class
-com\chaau568\flashcards\repository\CardRepository.class
 com\chaau568\flashcards\entity\User.class
+com\chaau568\flashcards\repository\CardRepository.class
 com\chaau568\flashcards\service\CardService.class
 com\chaau568\flashcards\repository\UserRepository.class
 com\chaau568\flashcards\repository\DeckRepository.class
