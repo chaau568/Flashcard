@@ -1,68 +1,57 @@
-* {
-    box-sizing: border-box;
-}
-
-body {
-    margin: 0px;
-    width: 100vw;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
 .registor-container {
-    position: relative;
-    min-width: fit-content;
-    min-height: fit-content;
-    display: flex;
-    flex-direction: column;
-    padding: 40px;
-    background-color: #FFF1D5;
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
-    border-bottom-left-radius: 12px;
-    border-bottom-right-radius: 12px;
-    box-shadow: 2px 2px 5px black;
+  width: 40vw;
+  height: 30vh;
+  /* position: relative; */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+  background-color: #fff1d5;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+  box-shadow: 2px 2px 5px black;
 }
 
 .registor-container div:first-child {
-    font-size: larger;
-    font-weight: bold;
-    text-align: center;
-    margin-bottom: 20px;
+  font-size: larger;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 20px;
 }
 
-.registor-container div:nth-child(2), 
+.registor-container div:nth-child(2),
 .registor-container div:nth-child(3) {
-    display: flex;
-    flex-direction: row;
-    gap: 10px;
-    margin-bottom: 20px;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  margin-bottom: 20px;
 }
 
 .registor-container div:nth-child(4) {
-    position: relative;
-    text-align: center;
+  position: relative;
+  text-align: center;
 }
 
 .registor-container div:nth-child(4) button {
-    background-color: #48e430;
-    border: 0px;
-    padding: 4px 6px;
-    border-radius: 4px;
+  background-color: #48e430;
+  border: 0px;
+  padding: 4px 6px;
+  border-radius: 4px;
 }
 
 .registor-container div:nth-child(4) button:hover {
-    transform: scale(1.02, 1.03);
-    transition: 0.3s ease-in-out;
-    background-color: #A3DC9A;
-    color: gray;
+  transform: scale(1.02, 1.03);
+  transition: 0.3s ease-in-out;
+  background-color: #a3dc9a;
+  color: gray;
 }
 
 .warring {
-    position: absolute;
-    font-style: italic;
-    font-size: small;
-    color: gray;
+  position: absolute;
+  font-style: italic;
+  font-size: small;
+  color: gray;
 }

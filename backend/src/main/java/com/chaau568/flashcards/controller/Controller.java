@@ -44,9 +44,14 @@ public class Controller {
     }
 
     // Greeting
-    @GetMapping
-    public ResponseEntity<ApiResponse> hello() {
-        ApiResponse response = new ApiResponse("Hello, you can connect spring boot!", HttpStatus.OK.value());
+    @GetMapping("/greeting")
+    public ResponseEntity<ApiResponse> authen(HttpSession session) {
+        String username = (String) session.getAttribute("username");
+        if (username == null || username.isEmpty()) {
+            ApiResponse response = new ApiResponse("Not logged in yet.", HttpStatus.UNAUTHORIZED.value());
+            return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+        }
+        ApiResponse response = new ApiResponse("Already logged in.", HttpStatus.OK.value());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -66,6 +71,13 @@ public class Controller {
         userService.login(username, password);
         session.setAttribute("username", username);
         ApiResponse response = new ApiResponse("User logined successfully.", HttpStatus.OK.value());
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponse> logout(HttpSession session) {
+        session.invalidate();
+        ApiResponse response = new ApiResponse("User logouted successfully.", HttpStatus.OK.value());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

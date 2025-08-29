@@ -1,12 +1,24 @@
 import "./Login.css";
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-const Login = () => {
+interface LoginProps {
+  onLoginSuccess: () => void;
+}
+
+const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
   const [username, Setusername] = useState<string>("");
   const [password, Setpassword] = useState<string>("");
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    document.body.classList.add("login-page");
+
+    return () => {
+      document.body.classList.remove("login-page");
+    };
+  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,6 +33,7 @@ const Login = () => {
     const data = await res.json();
 
     if (res.ok) {
+      onLoginSuccess();
       navigate("/");
     } else {
       alert("Login failed: " + data.message);
@@ -30,6 +43,9 @@ const Login = () => {
   return (
     <>
       <div className="login-container">
+        <header>
+          <h2>LOGIN</h2>
+        </header>
         <form className="form-container" onSubmit={handleLogin}>
           <div className="form-username">
             <label>Username</label>
