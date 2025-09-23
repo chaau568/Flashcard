@@ -25,15 +25,7 @@ const DeckOwner = () => {
   const [results, setResults] = useState<TypeCardResult[]>([]);
   const naviaget = useNavigate();
 
-  // filter cards ที่พร้อมใช้งาน
-  const now = new Date();
-  const availableCards = cards.filter((card) => {
-    if (!card.processingTime) return true;
-    const processingDate = new Date(card.processingTime);
-    return now >= processingDate;
-  });
-
-  const currentCard = availableCards[currentIndex];
+  const currentCard = cards[currentIndex];
 
   const handleProgress = (progress: "easy" | "normal" | "hard" | "again") => {
     if (currentCard) {
@@ -73,16 +65,17 @@ const DeckOwner = () => {
 
     if (deckId) fetchCards();
 
+    if (finished) {
+      naviaget("/deck_finish", { state: { deckId, deckName, results } });
+    }
+
     return () => {
       document.body.classList.remove(style.deck_page);
     };
-  }, [deckId]);
+  }, [finished, deckId]);
 
   if (loading) return <p>Loading...</p>;
-  if (availableCards.length === 0) return <p>No cards available yet.</p>;
-  if (finished) {
-    naviaget("/deck_finish", { state: { deckId, deckName, results } });
-  }
+  if (cards.length === 0) return <p>No cards in this deck.</p>;
 
   return (
     <div className={style.deck_container}>
@@ -95,7 +88,7 @@ const DeckOwner = () => {
       <div className={style.card}>
         <div className={style.no}>
           <h4>
-            {no}/{availableCards.length}
+            {no}/{cards.length}
           </h4>
         </div>
         {!showAnswer ? (
@@ -121,7 +114,7 @@ const DeckOwner = () => {
                   progress as "easy" | "normal" | "hard" | "again"
                 );
                 // ไป card ถัดไปทันที
-                if (currentIndex + 1 >= availableCards.length) {
+                if (currentIndex + 1 >= cards.length) {
                   setFinished(true); // หมด deck
                 } else {
                   setCurrentIndex(currentIndex + 1);

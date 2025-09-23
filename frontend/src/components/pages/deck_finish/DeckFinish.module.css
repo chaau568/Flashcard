@@ -1,0 +1,71 @@
+body.deck_finish_page {
+  width: 100vw;
+  min-height: 100vh;
+  background-color: #fafdd6;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+div.deck_finish_container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  background-color: #896c6c;
+  padding: 30px;
+  border: 1px solid black;
+  border-radius: 24px;
+  box-shadow: 3px 4px 5px black;
+}
+
+div.header {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-weight: 800;
+}
+
+div.deck_finish_content {
+  display: grid;
+  text-align: center;
+  grid-template-areas:
+    "summary summary summary"
+    "summary_new summary_learning summary_understand";
+  gap: 30px;
+  color: white;
+}
+
+div.summary {
+  grid-area: summary;
+}
+
+div.summary_new {
+  grid-area: summary_new;
+}
+
+div.summary_learning {
+  grid-area: summary_learning;
+}
+
+div.summary_understand {
+  grid-area: summary_understand;
+}
+
+div.btn button {
+  padding: 4px;
+  border: 1px solid black;
+  border-radius: 8px;
+  transition: transform 0.4s ease;
+  font-weight: 800;
+  background-color: #dd0303;
+  color: white;
+}
+
+div.bth button:hover {
+  transform: scale(1.05);
+}

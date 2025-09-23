@@ -141,6 +141,13 @@ public class CardServiceImplement implements CardService {
     @Override
     @Transactional
     public List<Card> loadAllCardsFromOwnerDeckId(String deckId) {
+        List<Card> cardList = cardRepository.findAllByOwnerDeckId(deckId);
+        return cardList;
+    }
+
+    @Override
+    @Transactional
+    public List<Card> loadAllCardsFromOwnerDeckIdThatExisting(String deckId) {
         List<Card> cardListOption = cardRepository.findAllByOwnerDeckId(deckId);
         List<Card> loadAllCards = new ArrayList<>();
         LocalDateTime nowDateTime = LocalDateTime.now();

@@ -220,7 +220,7 @@ public class Controller {
         if (session == null || session.getAttribute("userId") == null) {
             throw new SessionNotFound("Session not found or Session expired.");
         }
-        List<Card> deckList = cardService.loadAllCardsFromOwnerDeckId(ownerId);
+        List<Card> deckList = cardService.loadAllCardsFromOwnerDeckIdThatExisting(ownerId);
         ApiResponseWithData response = new ApiResponseWithData("All Cards getted by owner deck id successfully.",
                 HttpStatus.OK.value(), deckList);
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -240,7 +240,7 @@ public class Controller {
     }
 
     @PutMapping("/card/update_progress_card")
-    public ResponseEntity<ApiResponse> updateProgressCard(HttpServletRequest request,
+    public ResponseEntity<ApiResponseWithData> updateProgressCard(HttpServletRequest request,
             @RequestBody UpdateCardForm cardForm) {
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("userId") == null) {
@@ -254,8 +254,9 @@ public class Controller {
             cardService.setTrackProgress(deckId, cardId, progress);
         }
 
-        ApiResponse response = new ApiResponse("Card updated successfully",
-                HttpStatus.OK.value());
+        List<Card> deckList = cardService.loadAllCardsFromOwnerDeckId(deckId);
+        ApiResponseWithData response = new ApiResponseWithData("Card updated successfully", HttpStatus.OK.value(),
+                deckList);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

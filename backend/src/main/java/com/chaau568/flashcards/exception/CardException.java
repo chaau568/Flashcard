@@ -15,4 +15,10 @@ public class CardException {
         ApiResponse response = new ApiResponse(ex.getMessage(), HttpStatus.NOT_FOUND.value());
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(CardDontHavePermissionException.class)
+    public ResponseEntity<ApiResponse> handleCardNotHavePermission(CardDontHavePermissionException ex) {
+        ApiResponse response = new ApiResponse(ex.getMessage(), HttpStatus.UNAUTHORIZED.value());
+        return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+    }
 }

@@ -14,4 +14,6 @@ public interface CardService {
     void setTrackProgress(String ownerDeckId, String cardId, String progress);
 
     List<Card> loadAllCardsFromOwnerDeckId(String deckId);
+
+    List<Card> loadAllCardsFromOwnerDeckIdThatExisting(String deckId);
 }
