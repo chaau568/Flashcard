@@ -18,14 +18,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.chaau568.flashcards.entity.Card;
+import com.chaau568.flashcards.entity.CardProgressUpdate;
 import com.chaau568.flashcards.entity.Deck;
+import com.chaau568.flashcards.entity.UpdateCardForm;
 import com.chaau568.flashcards.entity.User;
+import com.chaau568.flashcards.exception.SessionNotFound;
+import com.chaau568.flashcards.repository.UserRepository;
 import com.chaau568.flashcards.response.ApiResponse;
 import com.chaau568.flashcards.response.ApiResponseWithData;
 import com.chaau568.flashcards.service.CardService;
 import com.chaau568.flashcards.service.DeckService;
 import com.chaau568.flashcards.service.UserService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 @CrossOrigin(origins = "http://localhost:5137")
@@ -43,8 +48,8 @@ public class Controller {
         this.cardService = cardService;
     }
 
-    // Greeting
-    @GetMapping("/greeting")
+    // Checking Authen
+    @GetMapping("/authen")
     public ResponseEntity<ApiResponse> authen(HttpSession session) {
         String username = (String) session.getAttribute("username");
         if (username == null || username.isEmpty()) {
@@ -56,25 +61,27 @@ public class Controller {
     }
 
     // User
-    @PostMapping("/register")
+    @PostMapping("/user/register")
     public ResponseEntity<ApiResponse> createAccount(@RequestBody User newUser) {
         userService.createAccount(newUser);
-        System.out.println(newUser);
         ApiResponse response = new ApiResponse("User created successfully.", HttpStatus.CREATED.value());
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<ApiResponse> login(@RequestBody Map<String, String> user, HttpSession session) {
+    @PostMapping("/user/login")
+    public ResponseEntity<ApiResponse> login(@RequestBody Map<String, String> user, HttpServletRequest request) {
         String username = user.get("username");
         String password = user.get("password");
+        String userId = userService.getUserId(username);
         userService.login(username, password);
+        HttpSession session = request.getSession(true);
+        session.setAttribute("userId", userId);
         session.setAttribute("username", username);
         ApiResponse response = new ApiResponse("User logined successfully.", HttpStatus.OK.value());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PostMapping("/logout")
+    @PostMapping("/user/logout")
     public ResponseEntity<ApiResponse> logout(HttpSession session) {
         session.invalidate();
         ApiResponse response = new ApiResponse("User logouted successfully.", HttpStatus.OK.value());
@@ -99,15 +106,13 @@ public class Controller {
     // return new ResponseEntity<>(response, HttpStatus.OK);
     // }
 
-    // @GetMapping("/user/get_by_name/{username}")
-    // public ResponseEntity<ApiResponseWithData> getUserByName(@PathVariable String
-    // username) {
-    // User user = userService.getUserByUsername(username);
-    // ApiResponseWithData response = new ApiResponseWithData("User getted by
-    // username successfully",
-    // HttpStatus.OK.value(), user);
-    // return new ResponseEntity<>(response, HttpStatus.OK);
-    // }
+    @GetMapping("/user/get_by_name/{username}")
+    public ResponseEntity<ApiResponseWithData> getUserByName(@PathVariable String username) {
+        User user = userService.loadUserByUsername(username);
+        ApiResponseWithData response = new ApiResponseWithData("User getted by username successfully.",
+                HttpStatus.OK.value(), user);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
     // @GetMapping("/user/get_by_id/{id}")
     // public ResponseEntity<ApiResponseWithData> getUserById(@PathVariable String
@@ -120,13 +125,19 @@ public class Controller {
     // }
 
     // Deck
-    // @PostMapping("/deck/create")
-    // public ResponseEntity<ApiResponse> createDeck(@RequestBody Deck newDeck) {
-    // deckService.createDeck(newDeck);
-    // ApiResponse response = new ApiResponse("Deck created successfully",
-    // HttpStatus.CREATED.value());
-    // return new ResponseEntity<>(response, HttpStatus.CREATED);
-    // }
+    @PostMapping("/deck/create")
+    public ResponseEntity<ApiResponse> createDeck(@RequestBody Deck newDeck, HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("userId") == null) {
+            throw new SessionNotFound("Session not found or Session expired.");
+        }
+        String userId = (String) session.getAttribute("userId");
+        userService.addOwnerDeck(userId, newDeck); // สร้าง deckId ใน ownerUser ก่อน แล้วค่อยสร้าง deck ที่หลัง
+        // deckService.createDeck(username, newDeck);
+        ApiResponse response = new ApiResponse("Deck created successfully.",
+                HttpStatus.CREATED.value());
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
 
     // @PutMapping("/deck/update/{id}/{userId}/{isPublic}")
     // public ResponseEntity<ApiResponse> updateDeck(@PathVariable String id,
@@ -156,16 +167,30 @@ public class Controller {
     // return new ResponseEntity<>(response, HttpStatus.OK);
     // }
 
-    // @GetMapping("/deck/get_by_user/{userId}")
-    // public ResponseEntity<ApiResponseWithData> getDeckByUserId(@PathVariable
-    // String userId) {
-    // List<Deck> deckList = deckService.getAllByOwnerUserId(userId);
-    // ApiResponseWithData response = new ApiResponseWithData("Deck getted by user
-    // id successfully",
-    // HttpStatus.OK.value(),
-    // deckList);
-    // return new ResponseEntity<>(response, HttpStatus.OK);
-    // }
+    @GetMapping("/deck/get_by_owner_user_id")
+    public ResponseEntity<ApiResponseWithData> getDeckByOwnerUserId(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("userId") == null) {
+            throw new SessionNotFound("Session not found or Session expired.");
+        }
+        String ownerUserId = (String) session.getAttribute("userId");
+        List<Deck> deckList = deckService.loadAllDecksFromOwnerUserId(ownerUserId);
+        ApiResponseWithData response = new ApiResponseWithData("Deck getted by owner user id successfully.",
+                HttpStatus.OK.value(), deckList);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/deck/get_by_public")
+    public ResponseEntity<ApiResponseWithData> getDeckByPublic(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("userId") == null) {
+            throw new SessionNotFound("Session not found or Session expired.");
+        }
+        List<Deck> deckList = deckService.loadAllDecksFromPublicUserId();
+        ApiResponseWithData response = new ApiResponseWithData("Deck getted by owner user id successfully.",
+                HttpStatus.OK.value(), deckList);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
     // @GetMapping("/deck/get_by_tag/{tag}")
     // public ResponseEntity<ApiResponseWithData> getDeckByTag(@PathVariable String
@@ -188,11 +213,49 @@ public class Controller {
     // }
 
     // Card
-    // @PostMapping("/card/create")
-    // public ResponseEntity<ApiResponse> createCard(@RequestBody Card newCard) {
-    // cardService.createCard(newCard);
-    // ApiResponse response = new ApiResponse("Card created successfully",
-    // HttpStatus.CREATED.value());
-    // return new ResponseEntity<>(response, HttpStatus.CREATED);
-    // }
+    @GetMapping("/card/get_by_deck_id/{ownerId}")
+    public ResponseEntity<ApiResponseWithData> getAllCardsByDeckId(HttpServletRequest request,
+            @PathVariable String ownerId) {
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("userId") == null) {
+            throw new SessionNotFound("Session not found or Session expired.");
+        }
+        List<Card> deckList = cardService.loadAllCardsFromOwnerDeckId(ownerId);
+        ApiResponseWithData response = new ApiResponseWithData("All Cards getted by owner deck id successfully.",
+                HttpStatus.OK.value(), deckList);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PostMapping("/card/create")
+    public ResponseEntity<ApiResponse> createCard(HttpServletRequest request, @RequestBody Card newCard) {
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("userId") == null) {
+            throw new SessionNotFound("Session not found or Session expired.");
+        }
+        String deckId = newCard.getOwnerDeckId();
+        cardService.createCard(deckId, newCard);
+        ApiResponse response = new ApiResponse("Card created successfully",
+                HttpStatus.CREATED.value());
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+    @PutMapping("/card/update_progress_card")
+    public ResponseEntity<ApiResponse> updateProgressCard(HttpServletRequest request,
+            @RequestBody UpdateCardForm cardForm) {
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("userId") == null) {
+            throw new SessionNotFound("Session not found or Session expired.");
+        }
+
+        String deckId = cardForm.getDeckId();
+        for (CardProgressUpdate update : cardForm.getResults()) {
+            String cardId = update.getCardId();
+            String progress = update.getProgress();
+            cardService.setTrackProgress(deckId, cardId, progress);
+        }
+
+        ApiResponse response = new ApiResponse("Card updated successfully",
+                HttpStatus.OK.value());
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 }

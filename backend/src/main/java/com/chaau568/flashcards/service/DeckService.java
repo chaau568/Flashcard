@@ -6,7 +6,7 @@ import com.chaau568.flashcards.entity.Card;
 import com.chaau568.flashcards.entity.Deck;
 
 public interface DeckService {
-    String createDeck(String ownerUserId, Deck newDeck);
+    String createDeck(String username, Deck newDeck);
 
     void deleteDeck(String ownerUserId, String deckId);
 
@@ -26,6 +26,6 @@ public interface DeckService {
 
     List<Deck> loadAllDecksFromOwnerUserId(String ownerUserId);
 
-    List<Deck> loadAllDecksFromPublicUserId(List<String> publicDeckId);
+    List<Deck> loadAllDecksFromPublicUserId();
 
 }

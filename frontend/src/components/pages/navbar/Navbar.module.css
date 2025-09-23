@@ -1,4 +1,4 @@
-div.navbar-container {
+div.navbar_container {
   width: 100vw;
   height: 6vh;
   position: sticky;
@@ -9,10 +9,10 @@ div.navbar-container {
   justify-content: space-between;
   align-items: center;
   padding: 0px 40px;
-  background-color: bisque;
+  background-color: #819a91;
 }
 
-div.navbar-container > div.navbar-left {
+div.navbar_left {
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
@@ -20,7 +20,7 @@ div.navbar-container > div.navbar-left {
   margin-left: 40px;
 }
 
-div.navbar-container > div.navbar-right {
+div.navbar_right {
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
@@ -31,7 +31,7 @@ div.navbar-container > div.navbar-right {
 
 a.link {
   text-decoration: none;
-  color: #320a6b;
+  color: white;
   font-size: large;
-  font-weight: bold;
+  font-weight: 800;
 }

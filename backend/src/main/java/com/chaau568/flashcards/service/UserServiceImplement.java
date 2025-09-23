@@ -98,7 +98,7 @@ public class UserServiceImplement implements UserService {
         userRepository.findById(userId).ifPresentOrElse(user -> {
             User currentUser = user;
             List<String> ownerDeckId = currentUser.getOwnerDeckIds();
-            if (ownerDeckId.isEmpty()) {
+            if (ownerDeckId == null || ownerDeckId.isEmpty()) {
                 ownerDeckId = new ArrayList<>();
                 currentUser.setOwnerDeckIds(ownerDeckId);
             }
@@ -124,6 +124,15 @@ public class UserServiceImplement implements UserService {
         }, () -> {
             throw new UserNotFoundException("User with ID '" + userId + "' was not found.");
         });
+    }
+
+    @Override
+    public String getUserId(String username) {
+        User user = userRepository.findByUsername(username).orElseThrow(() -> {
+            throw new UserNotFoundException("User with NAME '" + username + "' was not found.");
+        });
+        String userId = user.getId();
+        return userId;
     }
 
 }

@@ -1,7 +1,6 @@
-import "./Logout.css";
-
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import style from "./Logout.module.css";
 
 interface LogoutProps {
   onLogoutSuccess: () => void;
@@ -11,10 +10,10 @@ const Logout: React.FC<LogoutProps> = ({ onLogoutSuccess }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    document.body.classList.add("logout-page");
+    document.body.classList.add(style.logout_page);
 
     return () => {
-      document.body.classList.remove("logout-page");
+      document.body.classList.remove(style.logout_page);
     };
   }, []);
 
@@ -24,7 +23,7 @@ const Logout: React.FC<LogoutProps> = ({ onLogoutSuccess }) => {
     if (state == "cancle") {
       navigate("/");
     } else {
-      const res = await fetch("http://localhost:8080/flashcard/logout", {
+      const res = await fetch("http://localhost:8080/flashcard/user/logout", {
         method: "POST",
         credentials: "include",
       });
@@ -32,6 +31,7 @@ const Logout: React.FC<LogoutProps> = ({ onLogoutSuccess }) => {
       if (res.ok) {
         console.log("Logout success: " + res.status);
         onLogoutSuccess();
+        // localStorage.removeItem("isLoggedIn");
         navigate("/login");
       } else {
         alert("Logout faild: " + res.status);
@@ -41,27 +41,17 @@ const Logout: React.FC<LogoutProps> = ({ onLogoutSuccess }) => {
 
   return (
     <>
-      <div className="logout-container">
-        <header>
+      <div className={style.logout_container}>
+        <div className={style.header}>
           <h2>LOGOUT</h2>
           <h3>Are you sure to logout</h3>
-        </header>
-        <div className="logout-content">
-          <div className="cancle">
-            <button
-              className="btn-cancle"
-              onClick={(e) => handleLogout(e, "cancle")}
-            >
-              CANCLE
-            </button>
+        </div>
+        <div className={style.logout_content}>
+          <div className={style.cancel}>
+            <button onClick={(e) => handleLogout(e, "cancle")}>CANCLE</button>
           </div>
-          <div className="confirm">
-            <button
-              className="btn-confirm"
-              onClick={(e) => handleLogout(e, "confirm")}
-            >
-              CONFIRM
-            </button>
+          <div className={style.confirm}>
+            <button onClick={(e) => handleLogout(e, "confirm")}>CONFIRM</button>
           </div>
         </div>
       </div>

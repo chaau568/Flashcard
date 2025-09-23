@@ -1,7 +1,6 @@
 package com.chaau568.flashcards.service;
 
 import com.chaau568.flashcards.entity.Deck;
-import com.chaau568.flashcards.entity.HybridPayload;
 import com.chaau568.flashcards.entity.User;
 
 public interface UserService {
@@ -13,13 +12,15 @@ public interface UserService {
 
     void changeUsername(String userId, String newUsername);
 
-    void changePassword(String userIdd, String newPassword);
+    void changePassword(String userId, String newPassword);
 
     User loadUserByUsername(String username);
 
     void addOwnerDeck(String userId, Deck newDeck);
 
     void deleteOwnerDeckId(String userId, String deckId);
+
+    String getUserId(String username);
 
     // boolean checkAuthentication(String userId, String UserPass);
 }

@@ -18,5 +18,7 @@ public interface DeckRepository extends MongoRepository<Deck, String> {
 
     List<Deck> findAllByTagListIn(List<String> tags);
 
+    List<Deck> findAllByIsPublicTrue();
+
     // List<Deck> findAllByCardListId(String cardListId);
 }

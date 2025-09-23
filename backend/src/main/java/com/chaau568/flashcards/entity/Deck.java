@@ -30,6 +30,7 @@ public class Deck {
     @Setter(AccessLevel.NONE)
     private String ownerUserId;
 
+    private String deckName;
     private Boolean isPublic;
     private List<String> cardListId;
     private List<String> tagList;
