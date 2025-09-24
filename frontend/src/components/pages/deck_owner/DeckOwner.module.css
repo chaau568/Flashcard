@@ -47,6 +47,7 @@ div.card {
   font-weight: 900;
   background-color: #aed6cf;
   position: relative;
+  padding: 30px;
 }
 
 div.no {

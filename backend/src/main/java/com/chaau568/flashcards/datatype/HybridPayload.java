@@ -1,4 +1,4 @@
-package com.chaau568.flashcards.entity;
+package com.chaau568.flashcards.datatype;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

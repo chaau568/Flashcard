@@ -2,12 +2,13 @@ C:\Users\66634\OneDrive\Desktop\Everythings\Flashcards\backend\src\main\java\com
 C:\Users\66634\OneDrive\Desktop\Everythings\Flashcards\backend\src\main\java\com\chaau568\flashcards\config\SecurityConfig.java
 C:\Users\66634\OneDrive\Desktop\Everythings\Flashcards\backend\src\main\java\com\chaau568\flashcards\config\WebConfig.java
 C:\Users\66634\OneDrive\Desktop\Everythings\Flashcards\backend\src\main\java\com\chaau568\flashcards\controller\Controller.java
+C:\Users\66634\OneDrive\Desktop\Everythings\Flashcards\backend\src\main\java\com\chaau568\flashcards\datatype\AddCardToDeckForm.java
+C:\Users\66634\OneDrive\Desktop\Everythings\Flashcards\backend\src\main\java\com\chaau568\flashcards\datatype\CardProgressUpdate.java
+C:\Users\66634\OneDrive\Desktop\Everythings\Flashcards\backend\src\main\java\com\chaau568\flashcards\datatype\HybridPayload.java
+C:\Users\66634\OneDrive\Desktop\Everythings\Flashcards\backend\src\main\java\com\chaau568\flashcards\datatype\UpdateCardForm.java
 C:\Users\66634\OneDrive\Desktop\Everythings\Flashcards\backend\src\main\java\com\chaau568\flashcards\encrypt\RSAUtils.java
 C:\Users\66634\OneDrive\Desktop\Everythings\Flashcards\backend\src\main\java\com\chaau568\flashcards\entity\Card.java
-C:\Users\66634\OneDrive\Desktop\Everythings\Flashcards\backend\src\main\java\com\chaau568\flashcards\entity\CardProgressUpdate.java
 C:\Users\66634\OneDrive\Desktop\Everythings\Flashcards\backend\src\main\java\com\chaau568\flashcards\entity\Deck.java
-C:\Users\66634\OneDrive\Desktop\Everythings\Flashcards\backend\src\main\java\com\chaau568\flashcards\entity\HybridPayload.java
-C:\Users\66634\OneDrive\Desktop\Everythings\Flashcards\backend\src\main\java\com\chaau568\flashcards\entity\UpdateCardForm.java
 C:\Users\66634\OneDrive\Desktop\Everythings\Flashcards\backend\src\main\java\com\chaau568\flashcards\entity\User.java
 C:\Users\66634\OneDrive\Desktop\Everythings\Flashcards\backend\src\main\java\com\chaau568\flashcards\exception\CardDontHavePermissionException.java
 C:\Users\66634\OneDrive\Desktop\Everythings\Flashcards\backend\src\main\java\com\chaau568\flashcards\exception\CardException.java

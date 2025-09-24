@@ -16,7 +16,7 @@ public interface UserService {
 
     User loadUserByUsername(String username);
 
-    void addOwnerDeck(String userId, Deck newDeck);
+    String addOwnerDeck(String userId, Deck newDeck);
 
     void deleteOwnerDeckId(String userId, String deckId);
 

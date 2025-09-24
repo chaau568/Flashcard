@@ -16,6 +16,7 @@ import Navbar from "./components/pages/navbar/Navbar";
 import DeckOwner from "./components/pages/deck_owner/DeckOwner";
 import DeckPublic from "./components/pages/deck_public/DeckPublic";
 import DeckFinish from "./components/pages/deck_finish/DeckFinish";
+import DeckCreate from "./components/pages/deck_create/DeckCreate";
 
 function LayoutWithNavbar() {
   return (
@@ -131,6 +132,16 @@ function App() {
           element={
             <ProtectedRoute isLoggedIn={isLoggedIn} loading={loading}>
               <DeckFinish />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Deck Create */}
+        <Route
+          path="/deck_create"
+          element={
+            <ProtectedRoute isLoggedIn={isLoggedIn} loading={loading}>
+              <DeckCreate />
             </ProtectedRoute>
           }
         />

@@ -58,6 +58,9 @@ public class DeckServiceImplement implements DeckService {
         Optional<Deck> deckOptional = deckRepository.findById(deckId);
         Deck currentDeck = deckOptional
                 .orElseThrow(() -> new DeckNotFoundException("Deck with ID '" + deckId + "' was not found."));
+        if (!currentDeck.getOwnerUserId().equals(ownerUserId)) {
+            throw new UserDontHavePermissionException("User with ID '" + ownerUserId + "' was not permission in this deck.");
+        }
         List<String> cardListId = currentDeck.getCardListId();
         if (cardListId == null) {
             cardListId = new ArrayList<>();

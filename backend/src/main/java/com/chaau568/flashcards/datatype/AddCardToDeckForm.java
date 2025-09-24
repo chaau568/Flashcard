@@ -1,6 +1,8 @@
-package com.chaau568.flashcards.entity;
+package com.chaau568.flashcards.datatype;
 
 import java.util.List;
+
+import com.chaau568.flashcards.entity.Card;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,7 +14,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 
-public class UpdateCardForm {
+public class AddCardToDeckForm {
     private String deckId;
-    private List<CardProgressUpdate> results;
+    private List<Card> results;
 }

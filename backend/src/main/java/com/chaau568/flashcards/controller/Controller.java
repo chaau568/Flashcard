@@ -17,10 +17,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.chaau568.flashcards.datatype.AddCardToDeckForm;
+import com.chaau568.flashcards.datatype.CardProgressUpdate;
+import com.chaau568.flashcards.datatype.UpdateCardForm;
 import com.chaau568.flashcards.entity.Card;
-import com.chaau568.flashcards.entity.CardProgressUpdate;
 import com.chaau568.flashcards.entity.Deck;
-import com.chaau568.flashcards.entity.UpdateCardForm;
 import com.chaau568.flashcards.entity.User;
 import com.chaau568.flashcards.exception.SessionNotFound;
 import com.chaau568.flashcards.repository.UserRepository;
@@ -126,16 +127,17 @@ public class Controller {
 
     // Deck
     @PostMapping("/deck/create")
-    public ResponseEntity<ApiResponse> createDeck(@RequestBody Deck newDeck, HttpServletRequest request) {
+    public ResponseEntity<ApiResponseWithData> createDeck(@RequestBody Deck newDeck, HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("userId") == null) {
             throw new SessionNotFound("Session not found or Session expired.");
         }
         String userId = (String) session.getAttribute("userId");
-        userService.addOwnerDeck(userId, newDeck); // สร้าง deckId ใน ownerUser ก่อน แล้วค่อยสร้าง deck ที่หลัง
+        String deckId = userService.addOwnerDeck(userId, newDeck); // สร้าง deckId ใน ownerUser ก่อน แล้วค่อยสร้าง deck
+                                                                   // ที่หลัง
         // deckService.createDeck(username, newDeck);
-        ApiResponse response = new ApiResponse("Deck created successfully.",
-                HttpStatus.CREATED.value());
+        ApiResponseWithData response = new ApiResponseWithData("Deck created successfully.",
+                HttpStatus.CREATED.value(), deckId);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
@@ -166,6 +168,25 @@ public class Controller {
     // deck);
     // return new ResponseEntity<>(response, HttpStatus.OK);
     // }
+
+    @PostMapping("/deck/create_card/")
+    public ResponseEntity<ApiResponse> createCardTODeckByDeckId(HttpServletRequest request,
+            @RequestBody AddCardToDeckForm newCard) {
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("userId") == null) {
+            throw new SessionNotFound("Session not found or Session expired.");
+        }
+
+        String ownerUserId = (String) session.getAttribute("userId");
+        String ownerDeckId = newCard.getDeckId();
+
+        for (Card card : newCard.getResults()) {
+            deckService.addCard(ownerUserId, ownerDeckId, card);
+        }
+
+        ApiResponse response = new ApiResponse("Add card to deck successfully.", HttpStatus.CREATED.value());
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
 
     @GetMapping("/deck/get_by_owner_user_id")
     public ResponseEntity<ApiResponseWithData> getDeckByOwnerUserId(HttpServletRequest request) {
@@ -226,18 +247,19 @@ public class Controller {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PostMapping("/card/create")
-    public ResponseEntity<ApiResponse> createCard(HttpServletRequest request, @RequestBody Card newCard) {
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("userId") == null) {
-            throw new SessionNotFound("Session not found or Session expired.");
-        }
-        String deckId = newCard.getOwnerDeckId();
-        cardService.createCard(deckId, newCard);
-        ApiResponse response = new ApiResponse("Card created successfully",
-                HttpStatus.CREATED.value());
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
-    }
+    // @PostMapping("/card/create")
+    // public ResponseEntity<ApiResponse> createCard(HttpServletRequest request,
+    // @RequestBody Card newCard) {
+    // HttpSession session = request.getSession(false);
+    // if (session == null || session.getAttribute("userId") == null) {
+    // throw new SessionNotFound("Session not found or Session expired.");
+    // }
+    // String deckId = newCard.getOwnerDeckId();
+    // cardService.createCard(deckId, newCard);
+    // ApiResponse response = new ApiResponse("Card created successfully",
+    // HttpStatus.CREATED.value());
+    // return new ResponseEntity<>(response, HttpStatus.CREATED);
+    // }
 
     @PutMapping("/card/update_progress_card")
     public ResponseEntity<ApiResponseWithData> updateProgressCard(HttpServletRequest request,

@@ -13,6 +13,10 @@ const Inventory = () => {
   const [flashcards, setFlashcards] = useState<TypeDeck[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const [visitDeck, setVisitDeck] = useState<boolean>(false);
+  const [addNewCard, setAddNewCard] = useState<boolean>(false);
+  const [deckIdSelect, setDeckIdSelect] = useState<string>("");
+  const [deckNameSelect, setDeckNameSelect] = useState<string>("");
 
   useEffect(() => {
     document.body.classList.add(style.inventory_page);
@@ -43,14 +47,25 @@ const Inventory = () => {
 
     fetchFlashcards();
 
+    if (visitDeck) {
+      navigate(`/deck_owner/${deckIdSelect}`, {
+        state: { deckName: deckNameSelect },
+      });
+    }
+
+    if (addNewCard) {
+      navigate("/deck_create");
+    }
+
     return () => {
       document.body.classList.remove(style.inventory_page);
     };
-  }, []);
+  }, [visitDeck, addNewCard]);
 
-  function visitDeck(id: string, name: string) {
-    console.log("Deck id: " + id);
-    navigate(`/deck_owner/${id}`, { state: { deckName: name } });
+  function deckSelect(id: string, name: string) {
+    setDeckIdSelect(id);
+    setDeckNameSelect(name);
+    setVisitDeck(true);
   }
 
   return (
@@ -64,12 +79,21 @@ const Inventory = () => {
           <div
             key={flashcard.id}
             className={style.flashcard}
-            onClick={() => visitDeck(flashcard.id, flashcard.deckName)}
+            onClick={() => deckSelect(flashcard.id, flashcard.deckName)}
           >
             <h3>{flashcard.deckName}</h3>
           </div>
         ))
       )}
+
+      <div className={style.addNewCardContainer}>
+        <button
+          onClick={() => setAddNewCard(true)}
+          className={style.addNewCardButton}
+        >
+          New Flashcard
+        </button>
+      </div>
     </div>
   );
 };
