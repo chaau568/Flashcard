@@ -31,6 +31,24 @@ div.deck_create_step1 {
   width: 100%;
 }
 
+div.deck_is_public {
+  margin-top: 30px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 60%;
+}
+
+div.is_public_content {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  column-gap: 20px;
+  width: 90%;
+}
+
 div.deck_name {
   margin-top: 30px;
   display: grid;
@@ -162,6 +180,14 @@ div.step3_header {
   align-items: center;
 }
 
+div.show_deck_is_public {
+  width: 100%;
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+}
+
 div.show_deck_name {
   width: 100%;
   margin-top: 20px;
@@ -229,4 +255,9 @@ button.remove_btn {
 
 div.step3_btn {
   margin: 30px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 60%;
 }

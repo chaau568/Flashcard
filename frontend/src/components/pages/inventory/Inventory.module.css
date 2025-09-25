@@ -48,7 +48,7 @@ div.addNewCardContainer {
   max-width: 250px;
   height: 20vh;
   border-radius: 12px;
-  background-color: #a0c878;
+  background-color: #ea5455;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   display: flex;
@@ -64,7 +64,7 @@ button.addNewCardButton {
   height: 100%;
   border-radius: 12px;
   border: none;
-  background-color: #a0c878;
+  background-color: #ea5455;
   color: black;
   font-weight: bold;
   cursor: pointer;
@@ -73,5 +73,5 @@ button.addNewCardButton {
 
 button.addNewCardButton:hover {
   transform: scale(1.03);
-  background-color: #ddeb9d;
+  background-color: #ffd460;
 }

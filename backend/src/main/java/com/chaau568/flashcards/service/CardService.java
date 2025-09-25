@@ -9,7 +9,7 @@ public interface CardService {
 
     void deleteCard(String ownerDeckId, String cardId);
 
-    void editCard(String ownerDeckId, String cardId, Card card);
+    void updateCard(String ownerDeckId, String cardId, Card updateCard);
 
     void setTrackProgress(String ownerDeckId, String cardId, String progress);
 

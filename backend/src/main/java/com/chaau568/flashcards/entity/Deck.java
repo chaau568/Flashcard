@@ -32,7 +32,6 @@ public class Deck {
 
     private String deckName;
     private Boolean isPublic;
-    private List<String> cardListId;
     private List<String> tagList;
 
     @CreatedDate

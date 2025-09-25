@@ -18,6 +18,7 @@ interface ApiResponseWithData<T> {
 const DeckCreate = () => {
   const [step, setStep] = useState<1 | 2 | 3>(1);
 
+  const [isPublic, setIsPublic] = useState<boolean>(false);
   const [deckName, setDeckName] = useState("");
   const [nameTags, setNameTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState("");
@@ -70,7 +71,11 @@ const DeckCreate = () => {
           "Content-Type": "application/json",
         },
         credentials: "include",
-        body: JSON.stringify({ deckName: deckName, tagList: nameTags }),
+        body: JSON.stringify({
+          isPublic: isPublic,
+          deckName: deckName,
+          tagList: nameTags,
+        }),
       });
 
       const json: ApiResponseWithData<string> = await res.json();
@@ -103,6 +108,7 @@ const DeckCreate = () => {
       return;
     }
     setCards([...cards, currentCard]);
+    setCurrentCard({ frontCard: "", backCard: "" });
     setStep(3);
   };
 
@@ -150,6 +156,32 @@ const DeckCreate = () => {
       {step === 1 && (
         <div className={style.deck_create_step1}>
           <h2>Create Deck</h2>
+
+          <div className={style.deck_is_public}>
+            <label>IsPublic:</label>
+            <div className={style.is_public_content}>
+              <div>
+                <input
+                  type="radio"
+                  id="public"
+                  name="isPublic"
+                  checked={isPublic === true}
+                  onChange={() => setIsPublic(true)}
+                />
+                <label htmlFor="public">Public</label>
+              </div>
+              <div>
+                <input
+                  type="radio"
+                  id="private"
+                  name="isPublic"
+                  checked={isPublic === false}
+                  onChange={() => setIsPublic(false)}
+                />
+                <label htmlFor="private">Private</label>
+              </div>
+            </div>
+          </div>
 
           <div className={style.deck_name}>
             <label>Deck Name:</label>
@@ -237,6 +269,11 @@ const DeckCreate = () => {
         <div className={style.deck_create_step3}>
           <div className={style.step3_header}>
             <h2>Deck Summary</h2>
+            <div className={style.show_deck_is_public}>
+              <p>
+                <b>IsPublic:</b> {isPublic ? "Public" : "Private"}
+              </p>
+            </div>
             <div className={style.show_deck_name}>
               <p>
                 <b>Deck Name:</b> {deckName}
@@ -279,6 +316,9 @@ const DeckCreate = () => {
           </div>
 
           <div className={style.step3_btn}>
+            <button type="button" onClick={() => setStep(2)}>
+              ⬅ Back
+            </button>
             <button type="button" onClick={handleSubmitFinal}>
               🚀 Submit Deck
             </button>

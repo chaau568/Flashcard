@@ -1,10 +1,9 @@
 export interface TypeDeck {
   id: string;
-  ownerUserId: string;
   isPublic: boolean;
+  ownerUsername: string;
   deckName: string;
-  cardListId: string[];
   tagList: string[];
-  createdAt: string;
-  updatedAt: string;
+  createAt: string;
+  updateAt: string;
 }

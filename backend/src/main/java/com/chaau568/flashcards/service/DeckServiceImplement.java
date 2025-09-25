@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.chaau568.flashcards.datatype.DeckInfo;
 import com.chaau568.flashcards.entity.Card;
 import com.chaau568.flashcards.entity.Deck;
 import com.chaau568.flashcards.entity.User;
@@ -29,6 +30,29 @@ public class DeckServiceImplement implements DeckService {
         this.deckRepository = deckRepository;
         this.cardService = cardService;
         this.userRepository = userRepository;
+    }
+
+    @Override
+    public DeckInfo getDeckInfo(String deckId) {
+        Optional<Deck> deckOptional = deckRepository.findById(deckId);
+        Deck deck = deckOptional.orElseThrow(() -> new DeckNotFoundException(
+                "Deck with ID '" + deckId + "' was not found."));
+
+        String ownerUserId = deck.getOwnerUserId();
+        Optional<User> user = userRepository.findById(ownerUserId);
+        User ownerUser = user
+                .orElseThrow(() -> new UserNotFoundException("User with ID '" + ownerUserId + "' was not found."));
+        String ownerUserName = ownerUser.getUsername();
+
+        DeckInfo deckInfo = new DeckInfo();
+        deckInfo.setOwnerUsername(ownerUserName);
+        deckInfo.setIsPublic(deck.getIsPublic());
+        deckInfo.setDeckName(deck.getDeckName());
+        deckInfo.setTagList(deck.getTagList());
+        deckInfo.setCreateAt(deck.getCreatedAt());
+        deckInfo.setUpdateAt(deck.getUpdatedAt());
+
+        return deckInfo;
     }
 
     @Override
@@ -54,74 +78,33 @@ public class DeckServiceImplement implements DeckService {
     }
 
     @Override
+    @Transactional
+    public void updateDeck(String ownerUserId, String ownerDeckId, Deck updateDeck) {
+        Optional<Deck> deckOptional = deckRepository.findById(ownerDeckId);
+        Deck deckUpdate = deckOptional.orElseThrow(() -> new DeckNotFoundException(
+                "Deck with ID '" + ownerDeckId + "' was not found."));
+        if (!deckUpdate.getOwnerUserId().equals(ownerUserId)) {
+            throw new UserDontHavePermissionException(
+                    "You are not the owner of Deck with ID '" + deckUpdate.getId() + "'.");
+        }
+
+        deckUpdate.setDeckName(updateDeck.getDeckName());
+        deckUpdate.setIsPublic(updateDeck.getIsPublic());
+        deckUpdate.setTagList(updateDeck.getTagList());
+        deckRepository.save(deckUpdate);
+    }
+
+    @Override
     public void addCard(String ownerUserId, String deckId, Card newCard) {
         Optional<Deck> deckOptional = deckRepository.findById(deckId);
         Deck currentDeck = deckOptional
                 .orElseThrow(() -> new DeckNotFoundException("Deck with ID '" + deckId + "' was not found."));
         if (!currentDeck.getOwnerUserId().equals(ownerUserId)) {
-            throw new UserDontHavePermissionException("User with ID '" + ownerUserId + "' was not permission in this deck.");
+            throw new UserDontHavePermissionException(
+                    "User with ID '" + ownerUserId + "' was not permission in this deck.");
         }
-        List<String> cardListId = currentDeck.getCardListId();
-        if (cardListId == null) {
-            cardListId = new ArrayList<>();
-            currentDeck.setCardListId(cardListId);
-        }
-        String cardId = cardService.createCard(currentDeck.getId(), newCard);
-        cardListId.add(cardId);
+        cardService.createCard(currentDeck.getId(), newCard);
         deckRepository.save(currentDeck);
-    }
-
-    @Override
-    public void addTags(String ownerUserId, String deckId, List<String> tags) {
-        Optional<Deck> deckOptional = deckRepository.findById(deckId);
-        Deck currentDeck = deckOptional
-                .orElseThrow(() -> new DeckNotFoundException("Deck with ID '" + deckId + "' was not found."));
-        List<String> tagList = currentDeck.getTagList();
-        if (tagList == null) {
-            tagList = new ArrayList<>();
-            currentDeck.setTagList(tagList);
-        }
-        for (String tag : tags) {
-            if (!tagList.contains(tag)) {
-                tagList.add(tag);
-            }
-        }
-        deckRepository.save(currentDeck);
-    }
-
-    @Override
-    @Transactional
-    public void delectCard(String ownerUserId, String deckId, String cardId) {
-        Optional<Deck> deckOptional = deckRepository.findById(deckId);
-        Deck currentDeck = deckOptional
-                .orElseThrow(() -> new DeckNotFoundException("Deck with ID '" + deckId + "' was not found."));
-        cardService.deleteCard(cardId, deckId);
-        List<String> cardListId = currentDeck.getCardListId();
-        if (!cardListId.isEmpty() && cardListId.contains(cardId)) {
-            cardListId.remove(cardId);
-        }
-        deckRepository.save(currentDeck);
-    }
-
-    @Override
-    public void delectTags(String ownerUserId, String deckId, List<String> tags) {
-        Optional<Deck> deckOptional = deckRepository.findById(deckId);
-        Deck currentDeck = deckOptional
-                .orElseThrow(() -> new DeckNotFoundException("Deck with ID '" + deckId + "' was not found."));
-        List<String> tagList = currentDeck.getTagList();
-        if (!tagList.isEmpty()) {
-            for (String tag : tagList) {
-                tagList.remove(tag);
-            }
-            deckRepository.save(currentDeck);
-        }
-    }
-
-    @Override
-    public void editCard(String ownerUserId, String deckId, String cardId, Card card) {
-        deckRepository.findById(deckId).orElseThrow(() -> new DeckNotFoundException(
-                "Deck with ID '" + deckId + "' was not found."));
-        cardService.editCard(deckId, cardId, card);
     }
 
     @Override
@@ -132,14 +115,6 @@ public class DeckServiceImplement implements DeckService {
                 deckRepository.deleteById(currentDeck.getId()); // delete deck when deck=>isPublic is false
             }
         }
-    }
-
-    @Override
-    public Deck loadDeckById(String deckId) {
-        Optional<Deck> deckOptional = deckRepository.findById(deckId);
-        Deck currentDeck = deckOptional.orElseThrow(() -> new DeckNotFoundException(
-                "Deck with ID '" + deckId + "' was not found."));
-        return currentDeck;
     }
 
     @Override

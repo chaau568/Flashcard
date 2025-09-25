@@ -96,14 +96,18 @@ public class CardServiceImplement implements CardService {
     }
 
     @Override
-    public void editCard(String ownerDeckId, String cardId, Card card) {
+    public void updateCard(String ownerDeckId, String cardId, Card updateCard) {
         cardRepository.findById(cardId).ifPresentOrElse(cardOptional -> {
             if (cardOptional.getOwnerDeckId().equals(ownerDeckId)) {
-                cardOptional.setFrontCard(card.getFrontCard());
-                cardOptional.setBackCard(card.getBackCard());
+                cardOptional.setFrontCard(updateCard.getFrontCard());
+                cardOptional.setBackCard(updateCard.getBackCard());
+                cardOptional.setProgress(0);
+                cardOptional.setState("new");
+                cardOptional.setProcessingTime(calculateTime(0));
                 cardRepository.save(cardOptional);
             } else {
-                throw new CardDontHavePermissionException("You are not the owner of Card with ID '" + cardId + "'.");
+                throw new CardDontHavePermissionException(
+                        "You are not the owner of Card with ID '" + cardId + "'.");
             }
         }, () -> {
             throw new CardNotFoundException("Card with ID '" + cardId + "' is not in deck '" + ownerDeckId + "'");

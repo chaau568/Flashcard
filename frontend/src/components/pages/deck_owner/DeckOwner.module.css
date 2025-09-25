@@ -32,6 +32,65 @@ div.exit button:hover {
   transform: translateX(-3px);
 }
 
+div.deck_step1 {
+  width: 40vw;
+  height: 60vh;
+  margin-top: 30px;
+  border: 2px solid black;
+  border-radius: 24px;
+  box-shadow: 2px 3px 5px black;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: x-large;
+  font-weight: 900;
+  background-color: #aed6cf;
+  padding: 30px;
+}
+
+div.deck_step1_content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  row-gap: 30px;
+}
+
+div.tags {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 8px 0;
+}
+
+span.tag {
+  background-color: #e0f0ff;
+  color: #0366d6;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+div.deck_step1_btn {
+  width: 40%;
+  margin-top: 50px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+div.deck_step2 {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
 div.card {
   width: 40vw;
   height: 60vh;

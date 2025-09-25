@@ -1,0 +1,201 @@
+body.deck_update_page {
+  width: 100vw;
+  min-height: 100vh;
+  background-color: #fafdd6;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+/* container */
+div.deck_update_container {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: center;
+  border: 1px solid rgba(0, 0, 0, 0.85);
+  box-shadow: 3px 2px 8px rgba(0, 0, 0, 0.25);
+  border-radius: 20px;
+  background-color: #f2ead3;
+  padding: 28px 28px 36px 28px;
+  min-width: 32vw;
+  max-width: 84vw;
+  min-height: 48vh;
+  gap: 18px;
+}
+
+div.deck_update_container h2 {
+  margin: 0;
+  padding: 0;
+}
+
+/* Deck info section */
+div.deck_info {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  align-items: center;
+}
+
+/* Deck name (label + input) */
+div.deck_name {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  align-items: center;
+  width: 60%;
+  gap: 8px;
+}
+
+div.deck_name label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+div.deck_name input {
+  padding: 6px 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  outline: none;
+  font-family: "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+div.deck_name input:focus {
+  border-color: #4a90e2;
+  box-shadow: 0 0 6px rgba(74, 144, 226, 0.25);
+}
+
+/* is public row */
+
+div.deck_is_public {
+  margin-top: 6px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 60%;
+}
+
+div.is_public_content {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  column-gap: 20px;
+  width: 90%;
+}
+
+/* tags */
+
+div.deck_tags {
+  width: 60%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+div.deck_tags h3 {
+  margin: 0 0 6px 0;
+}
+
+div.deck_tags > div {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+div.deck_tags input[type="text"] {
+  flex: 1;
+  padding: 6px 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+div.deck_tags button {
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+div.deck_add_tag {
+  width: 60%;
+  display: flex;
+  justify-content: flex-end;
+}
+
+div.deck_add_tag button {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.6);
+  background-color: #fff;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+/* Cards section */
+
+div.deck_card {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+div.deck_card h3 {
+  margin: 6px 0;
+}
+
+div.deck_card > div {
+  width: 60%;
+  padding: 10px;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.6);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+div.deck_card label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+}
+
+div.deck_card textarea {
+  padding: 10px;
+  box-sizing: border-box;
+  font-family: "Segoe UI", sans-serif;
+  transition: border 0.2s, box-shadow 0.2s;
+  outline: none;
+  border: 1px solid #ccc;
+}
+
+div.deck_card textarea:focus {
+  border: 1px solid #4a90e2;
+  box-shadow: 0 0 5px rgba(74, 144, 226, 0.5);
+}
+
+/* update buttons */
+
+div.deck_update_btn {
+  display: flex;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+div.deck_update_btn button {
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.6);
+  background-color: #fff;
+  cursor: pointer;
+  font-weight: 600;
+}

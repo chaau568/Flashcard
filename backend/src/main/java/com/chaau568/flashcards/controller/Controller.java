@@ -18,7 +18,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.chaau568.flashcards.datatype.AddCardToDeckForm;
+import com.chaau568.flashcards.datatype.CardCreateForm;
 import com.chaau568.flashcards.datatype.CardProgressUpdate;
+import com.chaau568.flashcards.datatype.CardUpdateForm;
+import com.chaau568.flashcards.datatype.DeckInfo;
+import com.chaau568.flashcards.datatype.DeckUpdateForm;
 import com.chaau568.flashcards.datatype.UpdateCardForm;
 import com.chaau568.flashcards.entity.Card;
 import com.chaau568.flashcards.entity.Deck;
@@ -89,24 +93,6 @@ public class Controller {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    // @PutMapping("/user/update/{id}/{username}/{password}")
-    // public ResponseEntity<ApiResponse> updateUser(@PathVariable String id,
-    // @PathVariable String username,
-    // @PathVariable String password) {
-    // userService.updateUser(id, username, password);
-    // ApiResponse response = new ApiResponse("User updated successfully",
-    // HttpStatus.OK.value());
-    // return new ResponseEntity<>(response, HttpStatus.OK);
-    // }
-
-    // @DeleteMapping("/user/delete/{id}")
-    // public ResponseEntity<ApiResponse> deleteUser(@PathVariable String id) {
-    // userService.deleteUser(id);
-    // ApiResponse response = new ApiResponse("User deleted successfully",
-    // HttpStatus.OK.value());
-    // return new ResponseEntity<>(response, HttpStatus.OK);
-    // }
-
     @GetMapping("/user/get_by_name/{username}")
     public ResponseEntity<ApiResponseWithData> getUserByName(@PathVariable String username) {
         User user = userService.loadUserByUsername(username);
@@ -115,59 +101,36 @@ public class Controller {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    // @GetMapping("/user/get_by_id/{id}")
-    // public ResponseEntity<ApiResponseWithData> getUserById(@PathVariable String
-    // id) {
-    // User user = userService.getUserById(id);
-    // ApiResponseWithData response = new ApiResponseWithData("User getted by id
-    // successfully", HttpStatus.OK.value(),
-    // user);
-    // return new ResponseEntity<>(response, HttpStatus.OK);
-    // }
-
     // Deck
+    @GetMapping("/deck/get_info/{deckId}")
+    public ResponseEntity<ApiResponseWithData> getDeckInfo(HttpServletRequest request, @PathVariable String deckId) {
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("userId") == null) {
+            throw new SessionNotFound("Session not found or Session expired.");
+        }
+
+        DeckInfo deckInfo = deckService.getDeckInfo(deckId);
+
+        ApiResponseWithData response = new ApiResponseWithData("Deck created successfully.",
+                HttpStatus.OK.value(), deckInfo);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
     @PostMapping("/deck/create")
     public ResponseEntity<ApiResponseWithData> createDeck(@RequestBody Deck newDeck, HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("userId") == null) {
             throw new SessionNotFound("Session not found or Session expired.");
         }
+
         String userId = (String) session.getAttribute("userId");
         String deckId = userService.addOwnerDeck(userId, newDeck); // สร้าง deckId ใน ownerUser ก่อน แล้วค่อยสร้าง deck
                                                                    // ที่หลัง
-        // deckService.createDeck(username, newDeck);
+
         ApiResponseWithData response = new ApiResponseWithData("Deck created successfully.",
                 HttpStatus.CREATED.value(), deckId);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
-
-    // @PutMapping("/deck/update/{id}/{userId}/{isPublic}")
-    // public ResponseEntity<ApiResponse> updateDeck(@PathVariable String id,
-    // @PathVariable String userId,
-    // @PathVariable Boolean isPublic, @RequestBody List<String> cardListId) {
-    // deckService.updateDeck(id, userId, cardListId, isPublic);
-    // ApiResponse response = new ApiResponse("Deck updated successfully",
-    // HttpStatus.OK.value());
-    // return new ResponseEntity<>(response, HttpStatus.OK);
-    // }
-
-    // @DeleteMapping("/deck/delete/{id}")
-    // public ResponseEntity<ApiResponse> deleteDeck(@PathVariable String id) {
-    // deckService.deleteDeck(id);
-    // ApiResponse response = new ApiResponse("Deck deleted successfully",
-    // HttpStatus.OK.value());
-    // return new ResponseEntity<>(response, HttpStatus.OK);
-    // }
-
-    // @GetMapping("/deck/get_by_id/{id}")
-    // public ResponseEntity<ApiResponseWithData> getDeckById(@PathVariable String
-    // id) {
-    // Deck deck = deckService.getById(id);
-    // ApiResponseWithData response = new ApiResponseWithData("Deck getted by id
-    // successfully", HttpStatus.OK.value(),
-    // deck);
-    // return new ResponseEntity<>(response, HttpStatus.OK);
-    // }
 
     @PostMapping("/deck/create_card/")
     public ResponseEntity<ApiResponse> createCardTODeckByDeckId(HttpServletRequest request,
@@ -186,6 +149,39 @@ public class Controller {
 
         ApiResponse response = new ApiResponse("Add card to deck successfully.", HttpStatus.CREATED.value());
         return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+    @PutMapping("/deck/update")
+    public ResponseEntity<ApiResponse> updateDeckByOwnerDeck(HttpServletRequest request,
+            @RequestBody DeckUpdateForm deck) {
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("userId") == null) {
+            throw new SessionNotFound("Session not found or Session expired.");
+        }
+
+        String ownerUserId = (String) session.getAttribute("userId");
+        String ownerDeckId = deck.getDeckId();
+        Deck updateDeck = deck.getDeck();
+
+        deckService.updateDeck(ownerUserId, ownerDeckId, updateDeck);
+
+        ApiResponse response = new ApiResponse("Update deck successfully.", HttpStatus.OK.value());
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/deck/delete/{deckId}")
+    public ResponseEntity<ApiResponse> deleteDeckByOwnerDeckId(HttpServletRequest request,
+            @PathVariable String deckId) {
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("userId") == null) {
+            throw new SessionNotFound("Session not found or Session expired.");
+        }
+
+        String ownerUserId = (String) session.getAttribute("userId");
+        deckService.deleteDeck(ownerUserId, deckId);
+
+        ApiResponse response = new ApiResponse("Delete deck successfully.", HttpStatus.OK.value());
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("/deck/get_by_owner_user_id")
@@ -213,26 +209,6 @@ public class Controller {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    // @GetMapping("/deck/get_by_tag/{tag}")
-    // public ResponseEntity<ApiResponseWithData> getDeckByTag(@PathVariable String
-    // tag) {
-    // List<Deck> deckList = deckService.getAllByTagList(tag);
-    // ApiResponseWithData response = new ApiResponseWithData("Deck getted by tag
-    // successfully", HttpStatus.OK.value(),
-    // deckList);
-    // return new ResponseEntity<>(response, HttpStatus.OK);
-    // }
-
-    // @GetMapping("/deck/get_by_tags/{tags}")
-    // public ResponseEntity<ApiResponseWithData> getDeckByTags(@PathVariable
-    // List<String> tags) {
-    // List<Deck> deckList = deckService.getAllByTageListIn(tags);
-    // ApiResponseWithData response = new ApiResponseWithData("Deck getted by tag
-    // successfully", HttpStatus.OK.value(),
-    // deckList);
-    // return new ResponseEntity<>(response, HttpStatus.OK);
-    // }
-
     // Card
     @GetMapping("/card/get_by_deck_id/{ownerId}")
     public ResponseEntity<ApiResponseWithData> getAllCardsByDeckId(HttpServletRequest request,
@@ -247,19 +223,23 @@ public class Controller {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    // @PostMapping("/card/create")
-    // public ResponseEntity<ApiResponse> createCard(HttpServletRequest request,
-    // @RequestBody Card newCard) {
-    // HttpSession session = request.getSession(false);
-    // if (session == null || session.getAttribute("userId") == null) {
-    // throw new SessionNotFound("Session not found or Session expired.");
-    // }
-    // String deckId = newCard.getOwnerDeckId();
-    // cardService.createCard(deckId, newCard);
-    // ApiResponse response = new ApiResponse("Card created successfully",
-    // HttpStatus.CREATED.value());
-    // return new ResponseEntity<>(response, HttpStatus.CREATED);
-    // }
+    @PutMapping("/card/update")
+    public ResponseEntity<ApiResponse> updateCard(HttpServletRequest request, @RequestBody CardUpdateForm updateCard) {
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("userId") == null) {
+            throw new SessionNotFound("Session not found or Session expired.");
+        }
+
+        String ownerDeckId = updateCard.getOwnerDeckId();
+        String cardId = updateCard.getCardId();
+        Card card = updateCard.getCard();
+
+        cardService.updateCard(ownerDeckId, cardId, card);
+
+        ApiResponse response = new ApiResponse("Card update successfully",
+                HttpStatus.OK.value());
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
     @PutMapping("/card/update_progress_card")
     public ResponseEntity<ApiResponseWithData> updateProgressCard(HttpServletRequest request,

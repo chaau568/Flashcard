@@ -3,7 +3,10 @@ C:\Users\66634\OneDrive\Desktop\Everythings\Flashcards\backend\src\main\java\com
 C:\Users\66634\OneDrive\Desktop\Everythings\Flashcards\backend\src\main\java\com\chaau568\flashcards\config\WebConfig.java
 C:\Users\66634\OneDrive\Desktop\Everythings\Flashcards\backend\src\main\java\com\chaau568\flashcards\controller\Controller.java
 C:\Users\66634\OneDrive\Desktop\Everythings\Flashcards\backend\src\main\java\com\chaau568\flashcards\datatype\AddCardToDeckForm.java
+C:\Users\66634\OneDrive\Desktop\Everythings\Flashcards\backend\src\main\java\com\chaau568\flashcards\datatype\CardCreateForm.java
 C:\Users\66634\OneDrive\Desktop\Everythings\Flashcards\backend\src\main\java\com\chaau568\flashcards\datatype\CardProgressUpdate.java
+C:\Users\66634\OneDrive\Desktop\Everythings\Flashcards\backend\src\main\java\com\chaau568\flashcards\datatype\CardUpdateForm.java
+C:\Users\66634\OneDrive\Desktop\Everythings\Flashcards\backend\src\main\java\com\chaau568\flashcards\datatype\DeckUpdateForm.java
 C:\Users\66634\OneDrive\Desktop\Everythings\Flashcards\backend\src\main\java\com\chaau568\flashcards\datatype\HybridPayload.java
 C:\Users\66634\OneDrive\Desktop\Everythings\Flashcards\backend\src\main\java\com\chaau568\flashcards\datatype\UpdateCardForm.java
 C:\Users\66634\OneDrive\Desktop\Everythings\Flashcards\backend\src\main\java\com\chaau568\flashcards\encrypt\RSAUtils.java
