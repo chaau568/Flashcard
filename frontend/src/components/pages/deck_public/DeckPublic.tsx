@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import type { TypeCard } from "../type/TypeCard";
-import style from "./DeckPublic.module.css";
 import type { TypeDeck } from "../type/TypeDeck";
+import { format } from "date-fns";
+import style from "./DeckPublic.module.css";
 
 interface ApiResponseWithData<T> {
   message: string;
@@ -48,8 +49,15 @@ const DeckPublic = () => {
         const json: ApiResponseWithData<TypeDeck> = await res.json();
         setOwnerUsername(json.data.ownerUsername);
         setTagList(json.data.tagList);
-        setCreateAt(json.data.createAt);
-        setUpdateAt(json.data.updateAt);
+
+        const formatDate1 = new Date(json.data.createAt);
+        const formatDate2 = new Date(json.data.updateAt);
+
+        const readableCreated = format(formatDate1, "dd/MM/yyyy HH:mm:ss");
+        const readableUpdated = format(formatDate2, "dd/MM/yyyy HH:mm:ss");
+
+        setCreateAt(readableCreated);
+        setUpdateAt(readableUpdated);
       } catch (error) {
         alert("Failed to fetch cards: " + error);
       } finally {

@@ -15,8 +15,7 @@ div.deck_container {
 
 div.deck_step1 {
   width: 40vw;
-  height: 60vh;
-  margin-top: 30px;
+  min-height: 60vh;
   border: 2px solid black;
   border-radius: 24px;
   box-shadow: 2px 3px 5px black;

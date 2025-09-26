@@ -124,7 +124,7 @@ const DeckCreate = () => {
       return;
     }
 
-    const newDeck: TypeDeckCreate = { deckId, results: cards };
+    const newDeck: TypeDeckCreate = { deckId: deckId, results: cards };
 
     try {
       const res = await fetch(

@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import type { TypeCard } from "../type/TypeCard";
 import type { TypeCardResult } from "../type/TypeCardResult";
-import style from "./DeckOwner.module.css";
 import type { TypeDeck } from "../type/TypeDeck";
+import { format } from "date-fns";
+import style from "./DeckOwner.module.css";
 
 interface ApiResponseWithData<T> {
   message: string;
@@ -12,7 +13,7 @@ interface ApiResponseWithData<T> {
 }
 
 const DeckOwner = () => {
-  const [step, setStep] = useState<1 | 2>(1);
+  const [step, setStep] = useState<1 | 2 | 3>(1);
   const [ownerUsername, setOwnerUsername] = useState<string>("");
   const [tagList, setTagList] = useState<string[]>([]);
   const [createAt, setCreateAt] = useState<string>("");
@@ -64,8 +65,15 @@ const DeckOwner = () => {
         const json: ApiResponseWithData<TypeDeck> = await res.json();
         setOwnerUsername(json.data.ownerUsername);
         setTagList(json.data.tagList);
-        setCreateAt(json.data.createAt);
-        setUpdateAt(json.data.updateAt);
+
+        const formatDate1 = new Date(json.data.createAt)
+        const formatDate2 = new Date(json.data.updateAt)
+
+        const readableCreated  = format(formatDate1, "dd/MM/yyyy HH:mm:ss");
+        const readableUpdated  = format(formatDate2, "dd/MM/yyyy HH:mm:ss");
+
+        setCreateAt(readableCreated);
+        setUpdateAt(readableUpdated);
       } catch (error) {
         alert("Failed to fetch cards: " + error);
       } finally {
@@ -135,6 +143,14 @@ const DeckOwner = () => {
     }
   };
 
+  const checkCanPlay = () => {
+    if (cards.length === 0) {
+      setStep(3);
+    } else {
+      setStep(2);
+    }
+  }
+
   return (
     <div className={style.deck_container}>
       <div className={style.exit}>
@@ -143,7 +159,9 @@ const DeckOwner = () => {
       {step === 1 && (
         <div className={style.deck_step1}>
           <div className={style.deck_step1_content}>
-            <h2>{deckName}</h2>
+            <div>
+              <h2>{deckName}</h2>
+            </div>
             <div className={style.tags}>
               <h3>Tags: </h3>
               {tagList.map((tag, index) => (
@@ -159,7 +177,7 @@ const DeckOwner = () => {
           </div>
           <div className={style.deck_step1_btn}>
             <button onClick={() => setIsEdit(true)}>Edit</button>
-            <button onClick={() => setStep(2)}>Play</button>
+            <button onClick={checkCanPlay}>Play</button>
             <button
               onClick={() => {
                 const confirmed = window.confirm(
@@ -222,6 +240,12 @@ const DeckOwner = () => {
               ))
             )}
           </div>
+        </div>
+      )}
+
+      {step === 3 && (
+        <div>
+          <h3>There are no cards to play yet.</h3>
         </div>
       )}
     </div>
