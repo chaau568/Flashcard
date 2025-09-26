@@ -64,11 +64,16 @@ public class DeckServiceImplement implements DeckService {
     }
 
     @Override
+    @Transactional
     public void deleteDeck(String ownerUserId, String deckId) {
         Optional<Deck> deckOptional = deckRepository.findById(deckId);
         Deck deckDelete = deckOptional.orElseThrow(() -> new DeckNotFoundException(
                 "Deck with ID '" + deckId + "' was not found."));
         if (deckDelete.getOwnerUserId().equals(ownerUserId)) {
+            List<Card> cardList = cardService.loadAllCardsFromOwnerDeckId(deckId);
+            for (Card card : cardList) {
+                cardService.deleteCard(deckId, card.getId());
+            }
             deckRepository.deleteById(deckDelete.getId());
         } else {
             throw new UserDontHavePermissionException("You are not the owner of Deck with ID '" + deckId + "'.");
