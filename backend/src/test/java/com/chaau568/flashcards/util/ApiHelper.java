@@ -1,6 +1,5 @@
 package com.chaau568.flashcards.util;
 
-import com.chaau568.flashcards.base.BaseTest;
 import com.chaau568.flashcards.datatype.AddCardToDeckForm;
 import com.chaau568.flashcards.datatype.CardUpdateForm;
 import com.chaau568.flashcards.datatype.DeckInfo;
@@ -11,23 +10,15 @@ import com.chaau568.flashcards.entity.Deck;
 import com.chaau568.flashcards.entity.User;
 import com.chaau568.flashcards.response.ApiResponseWithData;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.net.URI;
 import java.net.http.*;
-import java.net.http.HttpRequest.BodyPublisher;
 import java.net.http.HttpRequest.BodyPublishers;
-import java.net.http.HttpResponse.BodyHandler;
 import java.net.http.HttpResponse.BodyHandlers;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-
-import org.springframework.boot.autoconfigure.graphql.GraphQlProperties.Http;
-import org.springframework.web.servlet.resource.HttpResource;
 
 public class ApiHelper {
     private final String BASE_URL;
@@ -46,7 +37,6 @@ public class ApiHelper {
     }
 
     // User
-
     public boolean authen() throws Exception {
         String url = BASE_URL + "/authen";
 
@@ -72,10 +62,9 @@ public class ApiHelper {
     }
 
     public String login(String username, String password) throws Exception {
-        String url = BASE_URL + "/user/login"; // กำหนด url (pathname)
-        Map<String, String> payload = Map.of("username", username, "password", password); // สร้างโครงสร้างแบบ key:
-                                                                                          // value
-        String body = mapper.writeValueAsString(payload); // แปลงโครงสร้างข้อมูลแบบ key: value เป็น json string
+        String url = BASE_URL + "/user/login";
+        Map<String, String> payload = Map.of("username", username, "password", password);
+        String body = mapper.writeValueAsString(payload);
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
@@ -248,7 +237,6 @@ public class ApiHelper {
         return mapper.convertValue(apiResp.getData(), String.class);
     }
 
-    // deck/update
     public void updateDeck(DeckUpdateForm deck) throws Exception {
         String url = BASE_URL + "/deck/update";
 
@@ -263,7 +251,6 @@ public class ApiHelper {
         }
     }
 
-    // deck/getLastCreateDeckId
     public String getLastCreatedDeckId() throws Exception {
         String url = BASE_URL + "/deck/get_by_owner_user_id";
 
@@ -287,7 +274,6 @@ public class ApiHelper {
         return deckList.get(deckList.size() - 1).get("id").toString();
     }
 
-    // deck/delete
     public void deleteDeck(String deckId) throws Exception {
         String url = BASE_URL + "/deck/delete/" + deckId;
 

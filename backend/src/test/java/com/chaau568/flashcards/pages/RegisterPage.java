@@ -99,5 +99,4 @@ public class RegisterPage {
             return null;
         }
     }
-
 }

@@ -50,7 +50,6 @@ public class AuthenticationTests extends BaseTest {
     @AfterEach
     void teardownTest() {
         try {
-            // ensure login before delete
             if (testUserId != null) {
                 apiHelper.login(TEST_USER, TEST_PASS);
                 apiHelper.deleteAccount(testUserId);
@@ -70,7 +69,6 @@ public class AuthenticationTests extends BaseTest {
         String expecteUrl = FRONTEND_BASE + "/";
         String actualUrl = driver.getCurrentUrl();
 
-        // message นี้คือ Assertion Message ใช่ในการเเสดงผ่าน console.log
         assertEquals(expecteUrl, actualUrl, "Login successful but not navigated to the correct Home URL.");
         assertNotNull(driver.manage().getCookieNamed("JSESSIONID"),
                 "JSESSIONID cookie was not set after successful login.");
@@ -85,7 +83,6 @@ public class AuthenticationTests extends BaseTest {
         String errorMessage = loginPage.getLoginErrorMessage();
         assertNotNull(errorMessage, "User not found, but no alert message was displayed.");
 
-        // contains จะต้องตรงกับ backend + frontend
         assertTrue(errorMessage.contains("Login failed: User with name '" +
                 nonExistentUser + "' was not found."),
                 "Error message content for user not found is incorrect.");
@@ -105,7 +102,6 @@ public class AuthenticationTests extends BaseTest {
         String errorMessage = loginPage.getLoginErrorMessage();
         assertNotNull(errorMessage, "Login failed, but no alert message was displayed.");
 
-        // contains จะต้องตรงกับ backend + frontend
         assertTrue(errorMessage.contains("Login failed: Password '" + incorrectPass +
                 "' was incorrect."),
                 "Error message content is incorrect.");
@@ -233,5 +229,4 @@ public class AuthenticationTests extends BaseTest {
 
         assertEquals(expectedUrl, actualUrl, "After failed registration, the page should remain on the Register URL.");
     }
-
 }

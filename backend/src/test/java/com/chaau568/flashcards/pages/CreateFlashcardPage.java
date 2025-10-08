@@ -178,5 +178,4 @@ public class CreateFlashcardPage {
         }
         backcardInput.sendKeys(backcard);
     }
-
 }

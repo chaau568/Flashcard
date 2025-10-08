@@ -28,9 +28,7 @@ public class PlayPrivateFlashcardTest extends BaseTest {
     private static final String TEST_USER = "admin";
     private static final String TEST_PASS = "admin1234";
 
-    // private String testUserId;
     private String testDeckId;
-    // private String sessionCookie;
 
     @BeforeEach
     void setupTest() throws Exception {
@@ -44,10 +42,6 @@ public class PlayPrivateFlashcardTest extends BaseTest {
 
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
         wait.until(ExpectedConditions.urlToBe(FRONTEND_BASE + "/"));
-
-        // if (testUserId == null) {
-        // testUserId = apiHelper.getUserIdFromSession();
-        // }
 
         driver.get(FRONTEND_BASE + "/");
     }
