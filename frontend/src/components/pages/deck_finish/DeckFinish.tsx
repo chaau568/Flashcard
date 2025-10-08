@@ -45,7 +45,7 @@ const DeckFinish = () => {
 
         if (!res.ok) {
           setMessage(json.message);
-          throw new Error(json.message || "Failed to update cards");
+          // throw new Error(json.message || "Failed to update cards");
         }
 
         console.table(json.data);
@@ -63,7 +63,7 @@ const DeckFinish = () => {
 
         setStateSummary(summary);
       } catch (error) {
-        alert("Failed to send cards to backend: " + error);
+        setMessage("Failed to send cards to backend: " + error);
       }
     };
 
@@ -102,7 +102,9 @@ const DeckFinish = () => {
         </div>
       </div>
       <div className={style.btn}>
-        <button onClick={() => navigate("/inventory")}>Exit</button>
+        <button id="btn-exit" onClick={() => navigate("/inventory")}>
+          Exit
+        </button>
       </div>
     </div>
   );

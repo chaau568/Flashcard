@@ -12,13 +12,14 @@ interface ApiResponseWithData<T> {
 }
 
 const DeckPublic = () => {
-  const [step, setStep] = useState<1 | 2>(1);
+  const [step, setStep] = useState<1 | 2 | 3>(1);
   const [ownerUsername, setOwnerUsername] = useState<string>("");
   const [tagList, setTagList] = useState<string[]>([]);
   const [createAt, setCreateAt] = useState<string>("");
   const [updateAt, setUpdateAt] = useState<string>("");
   const [cards, setCards] = useState<TypeCard[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const { deckId } = useParams<string>();
   const location = useLocation();
   const { deckName } = location.state || {};
@@ -59,7 +60,7 @@ const DeckPublic = () => {
         setCreateAt(readableCreated);
         setUpdateAt(readableUpdated);
       } catch (error) {
-        alert("Failed to fetch cards: " + error);
+        setErrorMessage("Failed to fetch cards: " + error);
       } finally {
         setLoading(false);
       }
@@ -98,11 +99,15 @@ const DeckPublic = () => {
 
   if (loading) return <p>Loading...</p>;
 
+  if (errorMessage) return <p>{errorMessage}</p>;
+
   if (finished) {
     return (
       <div className={style.deck_container}>
         <h2>Deck Finished!</h2>
-        <button onClick={() => window.history.back()}>Exit</button>
+        <button id="btn-exit-finished" onClick={() => window.history.back()}>
+          Exit
+        </button>
       </div>
     );
   }
@@ -117,13 +122,21 @@ const DeckPublic = () => {
     }
   };
 
+  const checkCanPlay = () => {
+    if (cards.length === 0) {
+      setStep(3);
+    } else {
+      setStep(2);
+    }
+  };
+
   return (
     <div className={style.deck_container}>
       <div className={style.exit}>
         <button onClick={() => window.history.back()}>Exit</button>
       </div>
       {step === 1 && (
-        <div className={style.deck_step1}>
+        <div id="deck-step-1" className={style.deck_step1}>
           <div className={style.deck_step1_content}>
             <h2>{deckName}</h2>
             <div className={style.tags}>
@@ -135,18 +148,20 @@ const DeckPublic = () => {
               ))}
             </div>
             <h3>Owner User: {ownerUsername}</h3>
-            <p>Cards Number: {cards.length}</p>
+            <p id="card-number">Cards Number: {cards.length}</p>
             <p>Create At: {createAt}</p>
             <p>Update At: {updateAt}</p>
           </div>
           <div className={style.deck_step1_btn}>
-            <button onClick={() => setStep(2)}>View</button>
+            <button id="btn-view-deck" onClick={checkCanPlay}>
+              View
+            </button>
           </div>
         </div>
       )}
 
       {step === 2 && (
-        <div className={style.deck_stpe2}>
+        <div id="deck-step-2" className={style.deck_stpe2}>
           <h2>Deck Name: {deckName}</h2>
           <div className={style.card}>
             <div className={style.no}>
@@ -155,19 +170,29 @@ const DeckPublic = () => {
               </h4>
             </div>
             {!showAnswer ? (
-              <p>Q: {currentCard.frontCard}</p>
+              <p id="card-content">Q: {currentCard.frontCard}</p>
             ) : (
-              <p>A: {currentCard.backCard}</p>
+              <p id="card-content">A: {currentCard.backCard}</p>
             )}
           </div>
 
           <div className={style.buttons}>
             {!showAnswer ? (
-              <button onClick={() => setShowAnswer(true)}>Show Answer</button>
+              <button id="btn-show-answer" onClick={() => setShowAnswer(true)}>
+                Show Answer
+              </button>
             ) : (
-              <button onClick={handleNext}>Next</button>
+              <button id="btn-next-card" onClick={handleNext}>
+                Next
+              </button>
             )}
           </div>
+        </div>
+      )}
+
+      {step === 3 && (
+        <div>
+          <h3>There are no cards to play yet.</h3>
         </div>
       )}
     </div>

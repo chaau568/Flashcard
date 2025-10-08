@@ -30,13 +30,15 @@ const Register = () => {
       const data = await res.json();
 
       if (res.ok) {
-        alert("Login successed: " + data.message);
+        alert("Registration successfully: " + data.message);
         navigate("/login");
       } else {
-        alert("Login failed: " + data.message);
+        alert("Registration failed: " + data.message);
       }
     } else {
-      alert("Your password and confirm password do not match.");
+      alert(
+        "Registration failed: Your password and confirm password do not match."
+      );
     }
   };
 
@@ -51,6 +53,7 @@ const Register = () => {
             <div className={style.username}>
               <h4>Username</h4>
               <input
+                id="username"
                 type="text"
                 value={username}
                 onChange={(event) => Setusername(event.target.value)}
@@ -60,6 +63,7 @@ const Register = () => {
             <div className={style.password}>
               <h4>Password</h4>
               <input
+                id="password"
                 type="password"
                 value={password}
                 onChange={(event) => Setpassword(event.target.value)}
@@ -69,6 +73,7 @@ const Register = () => {
             <div className={style.confirm_password}>
               <h4>Confirm Password</h4>
               <input
+                id="confirm_password"
                 type="password"
                 value={confirmPassword}
                 onChange={(event) => SetconfirmPassword(event.target.value)}
@@ -76,7 +81,9 @@ const Register = () => {
               ></input>
             </div>
             <div className={style.form_btn}>
-              <button type="submit">Register</button>
+              <button id="btn_register" type="submit">
+                Register
+              </button>
             </div>
           </form>
         </div>

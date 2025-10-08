@@ -55,10 +55,9 @@ public class DeckServiceImplement implements DeckService {
 
     @Override
     @Transactional
-    public String createDeck(String userId, Deck newDeck) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("User with ID '" + userId + "' was not found."));
-        String ownerUserId = user.getId();
+    public String createDeck(String ownerUserId, Deck newDeck) {
+        userRepository.findById(ownerUserId)
+                .orElseThrow(() -> new UserNotFoundException("User with ID '" + ownerUserId + "' was not found."));
         newDeck.assignToOwnerUserId(ownerUserId);
         return deckRepository.save(newDeck).getId();
     }

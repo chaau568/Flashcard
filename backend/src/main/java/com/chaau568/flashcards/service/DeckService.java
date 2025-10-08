@@ -9,7 +9,7 @@ import com.chaau568.flashcards.entity.Deck;
 public interface DeckService {
     DeckInfo getDeckInfo(String deckId);
 
-    String createDeck(String username, Deck newDeck); //
+    String createDeck(String ownerUserId, Deck newDeck); //
 
     void deleteDeck(String ownerUserId, String deckId);
 

@@ -18,6 +18,9 @@ interface ApiResponseWithData<T> {
 const DeckCreate = () => {
   const [step, setStep] = useState<1 | 2 | 3>(1);
 
+  const [loadding, setLoadding] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
   const [isPublic, setIsPublic] = useState<boolean>(false);
   const [deckName, setDeckName] = useState("");
   const [nameTags, setNameTags] = useState<string[]>([]);
@@ -60,9 +63,12 @@ const DeckCreate = () => {
   // ✅ เมื่อกด Create Deck → ไป step 2
   const handleCreateDeck = async () => {
     if (!deckName.trim()) {
-      alert("Please enter deck name");
+      setErrorMessage("Please enter deck name");
       return;
     }
+
+    setLoadding(true);
+    setErrorMessage(null);
 
     try {
       const res = await fetch("http://localhost:8080/flashcard/deck/create", {
@@ -81,20 +87,22 @@ const DeckCreate = () => {
       const json: ApiResponseWithData<string> = await res.json();
 
       if (!res.ok) {
-        alert(json.message);
+        setErrorMessage(json.message);
       } else {
         setDeckId(json.data);
         setStep(2);
       }
     } catch (error) {
-      alert("Failed to send cards to backend: " + error);
+      setErrorMessage("Failed to send cards to backend: " + error);
+    } finally {
+      setLoadding(false);
     }
   };
 
   // ✅ Next → บันทึกการ์ด แล้ว reset ช่อง
   const handleNextCard = () => {
     if (!currentCard.frontCard.trim() || !currentCard.backCard.trim()) {
-      alert("Please fill in both front and back of the card");
+      setErrorMessage("Please fill in both front and back of the card");
       return;
     }
     setCards([...cards, currentCard]);
@@ -104,7 +112,7 @@ const DeckCreate = () => {
   // ✅ Add → บันทึกการ์ดปัจจุบัน + ไป step 3
   const handleFinishCards = () => {
     if (!currentCard.frontCard.trim() || !currentCard.backCard.trim()) {
-      alert("Please fill in both front and back of the card");
+      setErrorMessage("Please fill in both front and back of the card");
       return;
     }
     setCards([...cards, currentCard]);
@@ -120,9 +128,12 @@ const DeckCreate = () => {
   // ✅ ส่งข้อมูลจริง (mock)
   const handleSubmitFinal = async () => {
     if (!deckName.trim() || cards.length === 0) {
-      alert("Deck must have a name and at least one card");
+      setErrorMessage("Deck must have a name and at least one card");
       return;
     }
+
+    setLoadding(true);
+    setErrorMessage(null);
 
     const newDeck: TypeDeckCreate = { deckId: deckId, results: cards };
 
@@ -142,19 +153,29 @@ const DeckCreate = () => {
       const json: ApiResponse = await res.json();
 
       if (!res.ok) {
-        alert(json.message);
+        setErrorMessage(json.message);
       } else {
         navigate("/inventory");
       }
     } catch (error) {
-      alert("Failed to send cards to backend: " + error);
+      setErrorMessage("Failed to send cards to backend: " + error);
+    } finally {
+      setLoadding(false);
     }
   };
+
+  if (loadding === true) {
+    return <h3>Loadding...</h3>;
+  }
+
+  if (errorMessage !== null) {
+    return <h3>{errorMessage}</h3>;
+  }
 
   return (
     <div className={style.deck_create_container}>
       {step === 1 && (
-        <div className={style.deck_create_step1}>
+        <div id="deck_step_1" className={style.deck_create_step1}>
           <h2>Create Deck</h2>
 
           <div className={style.deck_is_public}>
@@ -186,6 +207,7 @@ const DeckCreate = () => {
           <div className={style.deck_name}>
             <label>Deck Name:</label>
             <input
+              id="deck_name"
               type="text"
               value={deckName}
               onChange={(e) => setDeckName(e.target.value)}
@@ -195,6 +217,7 @@ const DeckCreate = () => {
           <div className={style.name_tags}>
             <label>Name Tags:</label>
             <input
+              id="tag_name"
               type="text"
               value={tagInput}
               onChange={(e) => setTagInput(e.target.value)}
@@ -203,7 +226,7 @@ const DeckCreate = () => {
 
           <div className={style.add_tags_container}>
             <div className={style.add_tag_btn}>
-              <button type="button" onClick={addTag}>
+              <button id="btn_add_tag" type="button" onClick={addTag}>
                 Add Tag
               </button>
             </div>
@@ -221,7 +244,11 @@ const DeckCreate = () => {
           </div>
 
           <div className={style.create_deck_btn}>
-            <button type="button" onClick={handleCreateDeck}>
+            <button
+              id="btn_create_deck"
+              type="button"
+              onClick={handleCreateDeck}
+            >
               Create Deck
             </button>
           </div>
@@ -229,12 +256,13 @@ const DeckCreate = () => {
       )}
 
       {step === 2 && (
-        <div className={style.deck_create_step2}>
+        <div id="deck_step_2" className={style.deck_create_step2}>
           <h2>Add Cards</h2>
           <div className={style.create_card}>
             <div className={style.front_card}>
               <label>FrontCard</label>
               <textarea
+                id="front_card"
                 placeholder="Front Card"
                 value={currentCard.frontCard}
                 onChange={(e) =>
@@ -245,6 +273,7 @@ const DeckCreate = () => {
             <div className={style.back_card}>
               <label>BackCard</label>
               <textarea
+                id="back_card"
                 placeholder="Back Card"
                 value={currentCard.backCard}
                 onChange={(e) =>
@@ -258,7 +287,7 @@ const DeckCreate = () => {
             <button type="button" onClick={handleNextCard}>
               Next ➡
             </button>
-            <button type="button" onClick={handleFinishCards}>
+            <button id="btn_finish" type="button" onClick={handleFinishCards}>
               ✅ Add & Finish
             </button>
           </div>
@@ -266,7 +295,7 @@ const DeckCreate = () => {
       )}
 
       {step === 3 && (
-        <div className={style.deck_create_step3}>
+        <div id="deck_step_3" className={style.deck_create_step3}>
           <div className={style.step3_header}>
             <h2>Deck Summary</h2>
             <div className={style.show_deck_is_public}>
@@ -319,7 +348,11 @@ const DeckCreate = () => {
             <button type="button" onClick={() => setStep(2)}>
               ⬅ Back
             </button>
-            <button type="button" onClick={handleSubmitFinal}>
+            <button
+              id="btn_submit_deck"
+              type="button"
+              onClick={handleSubmitFinal}
+            >
               🚀 Submit Deck
             </button>
           </div>

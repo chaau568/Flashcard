@@ -31,7 +31,6 @@ const Logout: React.FC<LogoutProps> = ({ onLogoutSuccess }) => {
       if (res.ok) {
         console.log("Logout success: " + res.status);
         onLogoutSuccess();
-        // localStorage.removeItem("isLoggedIn");
         navigate("/login");
       } else {
         alert("Logout faild: " + res.status);
@@ -48,10 +47,17 @@ const Logout: React.FC<LogoutProps> = ({ onLogoutSuccess }) => {
         </div>
         <div className={style.logout_content}>
           <div className={style.cancel}>
-            <button onClick={(e) => handleLogout(e, "cancle")}>CANCLE</button>
+            <button id="btn_cancel" onClick={(e) => handleLogout(e, "cancle")}>
+              CANCLE
+            </button>
           </div>
           <div className={style.confirm}>
-            <button onClick={(e) => handleLogout(e, "confirm")}>CONFIRM</button>
+            <button
+              id="btn_confirm"
+              onClick={(e) => handleLogout(e, "confirm")}
+            >
+              CONFIRM
+            </button>
           </div>
         </div>
       </div>

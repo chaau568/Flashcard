@@ -59,7 +59,7 @@ function App() {
           console.log("session exists");
         } else {
           setIsLoggedIn(false);
-          console.log("session exists");
+          console.log("session expired");
         }
       } catch (err) {
         setIsLoggedIn(false);

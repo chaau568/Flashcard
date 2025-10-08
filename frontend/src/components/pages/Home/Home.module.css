@@ -7,11 +7,18 @@ body.home_page {
 div.home_container {
   width: 100%;
   min-height: 100vh;
-  display: grid;
+  display: flex; 
+  justify-content: center;
+  padding: 20px;
+}
+
+div.deck_list_container {
+  display: grid; 
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   grid-auto-rows: 20vh;
   gap: 10px 20px;
-  padding: 20px;
+  width: 100%;
+  max-width: 1200px;
   justify-items: center;
 }
 

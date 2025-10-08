@@ -91,44 +91,46 @@ public class UserServiceImplement implements UserService {
                 .orElseThrow(() -> new UserNotFoundException("User with NAME '" + username + "' was not found."));
     }
 
-    @Override
-    @Transactional
-    public String addOwnerDeck(String userId, Deck newDeck) {
-        Optional<User> user = userRepository.findById(userId);
-        User currentUser = user
-                .orElseThrow(() -> new UserNotFoundException("User with ID '" + userId + "' was not found."));
+    // @Override
+    // @Transactional
+    // public String addOwnerDeck(String userId, Deck newDeck) {
+    // Optional<User> user = userRepository.findById(userId);
+    // User currentUser = user
+    // .orElseThrow(() -> new UserNotFoundException("User with ID '" + userId + "'
+    // was not found."));
 
-        List<String> ownerDeckId = currentUser.getOwnerDeckIds();
-        if (ownerDeckId == null || ownerDeckId.isEmpty()) {
-            ownerDeckId = new ArrayList<>();
+    // List<String> ownerDeckId = currentUser.getOwnerDeckIds();
+    // if (ownerDeckId == null || ownerDeckId.isEmpty()) {
+    // ownerDeckId = new ArrayList<>();
 
-        } else {
-            ownerDeckId = new ArrayList<>(ownerDeckId);
-        }
+    // } else {
+    // ownerDeckId = new ArrayList<>(ownerDeckId);
+    // }
 
-        currentUser.setOwnerDeckIds(ownerDeckId);
-        String deckId = deckService.createDeck(userId, newDeck);
-        ownerDeckId.add(deckId);
-        userRepository.save(currentUser);
+    // currentUser.setOwnerDeckIds(ownerDeckId);
+    // String deckId = deckService.createDeck(userId, newDeck);
+    // ownerDeckId.add(deckId);
+    // userRepository.save(currentUser);
 
-        return deckId;
-    }
+    // return deckId;
+    // }
 
-    @Override
-    @Transactional
-    public void deleteOwnerDeckId(String userId, String deckId) {
-        userRepository.findById(userId).ifPresentOrElse(user -> {
-            User currentUser = user;
-            deckService.deleteDeck(userId, deckId);
-            List<String> deckIds = currentUser.getOwnerDeckIds();
-            if (!deckId.isEmpty()) {
-                deckIds.remove(deckId);
-            }
-            userRepository.save(currentUser);
-        }, () -> {
-            throw new UserNotFoundException("User with ID '" + userId + "' was not found.");
-        });
-    }
+    // @Override
+    // @Transactional
+    // public void deleteOwnerDeckId(String userId, String deckId) {
+    // userRepository.findById(userId).ifPresentOrElse(user -> {
+    // User currentUser = user;
+    // deckService.deleteDeck(userId, deckId);
+    // List<String> deckIds = currentUser.getOwnerDeckIds();
+    // if (!deckId.isEmpty()) {
+    // deckIds.remove(deckId);
+    // }
+    // userRepository.save(currentUser);
+    // }, () -> {
+    // throw new UserNotFoundException("User with ID '" + userId + "' was not
+    // found.");
+    // });
+    // }
 
     @Override
     public String getUserId(String username) {

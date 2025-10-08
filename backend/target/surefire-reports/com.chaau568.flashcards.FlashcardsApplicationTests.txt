@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.chaau568.flashcards.FlashcardsApplicationTests
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 8.008 s -- in com.chaau568.flashcards.FlashcardsApplicationTests

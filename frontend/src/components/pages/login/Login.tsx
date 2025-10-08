@@ -52,6 +52,7 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
             <div className={style.username}>
               <h4>Username</h4>
               <input
+                id="username"
                 type="text"
                 value={username}
                 onChange={(event) => Setusername(event.target.value)}
@@ -61,6 +62,7 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
             <div className={style.password}>
               <h4>Password</h4>
               <input
+                id="password"
                 type="password"
                 value={password}
                 onChange={(event) => Setpassword(event.target.value)}
@@ -68,12 +70,15 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
               ></input>
             </div>
             <div className={style.form_btn}>
-              <button type="submit">Login</button>
+              <button id="btn_login" type="submit">
+                Login
+              </button>
             </div>
             <div className={style.alternative_login}>
               <h5>
                 DON'T HAVE AN ACCOUNT?
                 <a
+                  id="btn_register"
                   onClick={() => navigate("/register")}
                   className={style.register_link}
                 >

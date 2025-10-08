@@ -20,6 +20,7 @@ const DeckOwner = () => {
   const [updateAt, setUpdateAt] = useState<string>("");
   const [cards, setCards] = useState<TypeCard[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const { deckId } = useParams<string>();
   const location = useLocation();
   const { deckName } = location.state || {};
@@ -30,7 +31,7 @@ const DeckOwner = () => {
   const [finished, setFinished] = useState(false);
 
   const [results, setResults] = useState<TypeCardResult[]>([]);
-  const naviaget = useNavigate();
+  const naviagate = useNavigate();
 
   const currentCard = cards[currentIndex];
   const [isEdit, setIsEdit] = useState<boolean>(false);
@@ -66,16 +67,16 @@ const DeckOwner = () => {
         setOwnerUsername(json.data.ownerUsername);
         setTagList(json.data.tagList);
 
-        const formatDate1 = new Date(json.data.createAt)
-        const formatDate2 = new Date(json.data.updateAt)
+        const formatDate1 = new Date(json.data.createAt);
+        const formatDate2 = new Date(json.data.updateAt);
 
-        const readableCreated  = format(formatDate1, "dd/MM/yyyy HH:mm:ss");
-        const readableUpdated  = format(formatDate2, "dd/MM/yyyy HH:mm:ss");
+        const readableCreated = format(formatDate1, "dd/MM/yyyy HH:mm:ss");
+        const readableUpdated = format(formatDate2, "dd/MM/yyyy HH:mm:ss");
 
         setCreateAt(readableCreated);
         setUpdateAt(readableUpdated);
       } catch (error) {
-        alert("Failed to fetch cards: " + error);
+        setErrorMessage("Failed to fetch cards: " + error);
       } finally {
         setLoading(false);
       }
@@ -108,7 +109,7 @@ const DeckOwner = () => {
     if (deckId) fetchCards();
 
     if (finished) {
-      naviaget("/deck_finish", { state: { deckId, deckName, results } });
+      naviagate("/deck_finish", { state: { deckId, deckName, results } });
     }
 
     return () => {
@@ -118,11 +119,13 @@ const DeckOwner = () => {
 
   useEffect(() => {
     if (isEdit) {
-      naviaget(`/deck_update/${deckId}`);
+      naviagate(`/deck_update/${deckId}`);
     }
   }, [isEdit, deckId]);
 
   if (loading) return <p>Loading...</p>;
+
+  if (errorMessage) return <p>{errorMessage}</p>;
 
   const handleRemoveDeck = async () => {
     if (!deckId) return;
@@ -137,7 +140,7 @@ const DeckOwner = () => {
 
       if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
       alert("Deck deleted successfully!");
-      naviaget("/inventory");
+      naviagate("/inventory");
     } catch (error) {
       alert("Failed to delete deck: " + error);
     }
@@ -149,7 +152,7 @@ const DeckOwner = () => {
     } else {
       setStep(2);
     }
-  }
+  };
 
   return (
     <div className={style.deck_container}>
@@ -158,7 +161,7 @@ const DeckOwner = () => {
       </div>
       {step === 1 && (
         <div className={style.deck_step1}>
-          <div className={style.deck_step1_content}>
+          <div id="deck-step-1" className={style.deck_step1_content}>
             <div>
               <h2>{deckName}</h2>
             </div>
@@ -171,14 +174,19 @@ const DeckOwner = () => {
               ))}
             </div>
             <h3>Owner User: {ownerUsername}</h3>
-            <p>Cards Number: {cards.length}</p>
+            <p id="card-number">Cards Number: {cards.length}</p>
             <p>Create At: {createAt}</p>
             <p>Update At: {updateAt}</p>
           </div>
           <div className={style.deck_step1_btn}>
-            <button onClick={() => setIsEdit(true)}>Edit</button>
-            <button onClick={checkCanPlay}>Play</button>
+            <button id="btn-edit-deck" onClick={() => setIsEdit(true)}>
+              Edit
+            </button>
+            <button id="btn-play-deck" onClick={checkCanPlay}>
+              Play
+            </button>
             <button
+              id="btn-remove-deck"
               onClick={() => {
                 const confirmed = window.confirm(
                   "Are you sure you want to delete this deck?"
@@ -195,7 +203,7 @@ const DeckOwner = () => {
       )}
 
       {step === 2 && (
-        <div className={style.deck_step2}>
+        <div id="deck-step-2" className={style.deck_step2}>
           <h2>Deck Name: {deckName}</h2>
           <div className={style.card}>
             <div className={style.no}>
@@ -205,33 +213,35 @@ const DeckOwner = () => {
             </div>
             {!showAnswer ? (
               <>
-                <p>Q: {currentCard.frontCard}</p>
+                <p id="card-content">Q: {currentCard.frontCard}</p>
               </>
             ) : (
               <>
-                <p>A: {currentCard.backCard}</p>
+                <p id="card-content">A: {currentCard.backCard}</p>
               </>
             )}
           </div>
 
           <div className={style.buttons}>
             {!showAnswer ? (
-              <button onClick={() => setShowAnswer(true)}>Show Answer</button>
+              <button id="btn-show-answer" onClick={() => setShowAnswer(true)}>
+                Show Answer
+              </button>
             ) : (
               ["easy", "normal", "hard", "again"].map((progress) => (
                 <button
+                  id="btn-select-progress"
                   key={progress}
                   onClick={() => {
                     handleProgress(
                       progress as "easy" | "normal" | "hard" | "again"
                     );
-                    // ไป card ถัดไปทันที
                     if (currentIndex + 1 >= cards.length) {
-                      setFinished(true); // หมด deck
+                      setFinished(true);
                     } else {
                       setCurrentIndex(currentIndex + 1);
                       setNo(no + 1);
-                      setShowAnswer(false); // reset สำหรับ card ถัดไป
+                      setShowAnswer(false);
                     }
                   }}
                 >
@@ -244,7 +254,7 @@ const DeckOwner = () => {
       )}
 
       {step === 3 && (
-        <div>
+        <div id="deck-step-3">
           <h3>There are no cards to play yet.</h3>
         </div>
       )}

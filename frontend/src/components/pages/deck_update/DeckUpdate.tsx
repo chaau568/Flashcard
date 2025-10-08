@@ -23,9 +23,10 @@ const DeckUpdate = () => {
   const [isPublic, setIsPublic] = useState(false);
   const [tagList, setTagList] = useState<string[]>([]);
   const [cards, setCards] = useState<TypeCard[]>([]);
+  const [deletedCardIds, setDeletedCardIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // เพิ่ม state ใหม่สำหรับติดตาม index ของการ์ดที่กำลังแสดง
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
 
   useEffect(() => {
@@ -36,8 +37,8 @@ const DeckUpdate = () => {
     };
   }, []);
 
-  // โหลดข้อมูล Deck
   useEffect(() => {
+    setErrorMessage(null);
     const fetchDeck = async () => {
       try {
         const res = await fetch(
@@ -49,7 +50,6 @@ const DeckUpdate = () => {
         setIsPublic(json.data.isPublic);
         setTagList(json.data.tagList);
 
-        // โหลด card
         const cardRes = await fetch(
           `http://localhost:8080/flashcard/card/get_by_deck_id/${deckId}`,
           { credentials: "include" }
@@ -57,7 +57,7 @@ const DeckUpdate = () => {
         const cardJson = await cardRes.json();
         setCards(cardJson.data);
       } catch (err) {
-        alert("Failed to load deck info: " + err);
+        setErrorMessage("Failed to load deck info: " + err);
       } finally {
         setLoading(false);
       }
@@ -77,14 +77,12 @@ const DeckUpdate = () => {
   };
 
   const addCard = () => {
-    // เมื่อเพิ่มการ์ดใหม่ ให้ตั้งค่า index ไปยังการ์ดใบใหม่ทันที
     setCards([...cards, { frontCard: "", backCard: "" }]);
     setCurrentCardIndex(cards.length);
   };
 
   const handleSave = async () => {
     try {
-      // 1. Update Deck
       await fetch("http://localhost:8080/flashcard/deck/update", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -99,11 +97,10 @@ const DeckUpdate = () => {
         }),
       });
 
-      // 2. แยก Card เดิม vs Card ใหม่
-      const existingCards = cards.filter((c) => c.id); // มี id = ของเดิม
-      const newCards = cards.filter((c) => !c.id); // ไม่มี id = ของใหม่
+      const existingCards = cards.filter((c) => c.id);
+      const newCards = cards.filter((c) => !c.id);
+      setErrorMessage(null);
 
-      // 2.1 Update card เดิม
       for (const card of existingCards) {
         await fetch("http://localhost:8080/flashcard/card/update", {
           method: "PUT",
@@ -120,7 +117,6 @@ const DeckUpdate = () => {
         });
       }
 
-      // 2.2 Create card ใหม่ (ถ้ามี)
       if (newCards.length > 0) {
         await fetch("http://localhost:8080/flashcard/deck/create_card/", {
           method: "POST",
@@ -136,41 +132,55 @@ const DeckUpdate = () => {
         });
       }
 
-      alert("Deck updated successfully!");
+      if (deletedCardIds.length > 0) {
+        await fetch("http://localhost:8080/flashcard/card/delete", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({
+            ownerDeckId: deckId,
+            cardId: deletedCardIds,
+          }),
+        });
+      }
+
+      setErrorMessage("Deck updated successfully!");
       navigate("/inventory");
     } catch (err) {
-      alert("Failed to update deck: " + err);
+      setErrorMessage("Failed to update deck: " + err);
     }
   };
 
-  // 1. เพิ่มฟังก์ชันสำหรับลบการ์ด
   const deleteCard = () => {
-    // สร้าง array ใหม่โดยกรองการ์ดที่ไม่ใช่ใบปัจจุบันออก
+    const deletedCard = cards[currentCardIndex];
+
+    if (deletedCard.id) {
+      setDeletedCardIds((prev) => [...prev, deletedCard.id!]);
+    }
+
     const newCards = cards.filter((_, i) => i !== currentCardIndex);
     setCards(newCards);
 
-    // ปรับ index หลังจากลบ
     if (currentCardIndex >= newCards.length && newCards.length > 0) {
-      // ถ้าลบการ์ดใบสุดท้าย ให้ย้าย index ไปยังการ์ดใบสุดท้ายใหม่
       setCurrentCardIndex(newCards.length - 1);
     } else if (newCards.length === 0) {
-      // ถ้าลบจนไม่มีการ์ดเหลือ ให้ reset index เป็น 0
       setCurrentCardIndex(0);
     }
   };
 
   if (loading) return <p>Loading...</p>;
 
-  return (
-    <div className={style.deck_update_container}>
-      <h2>Edit Deck</h2>
+  if (errorMessage) return <p>{errorMessage}</p>;
 
-      {/* Deck Info */}
+  return (
+    <div id="deck-update-container" className={style.deck_update_container}>
+      <h2>Edit Deck</h2>
       <div className={style.deck_info}>
         <div className={style.deck_name}>
           <label>
             Deck Name:
             <input
+              id="deck-name-input"
               type="text"
               value={deckName}
               onChange={(e) => setDeckName(e.target.value)}
@@ -184,22 +194,22 @@ const DeckUpdate = () => {
             <div>
               <input
                 type="radio"
-                id="public"
+                id="public-radio"
                 name="isPublic"
                 checked={isPublic === true}
                 onChange={() => setIsPublic(true)}
               />
-              <label htmlFor="public">Public</label>
+              <label htmlFor="public-radio">Public</label>
             </div>
             <div>
               <input
                 type="radio"
-                id="private"
+                id="private-radio"
                 name="isPublic"
                 checked={isPublic === false}
                 onChange={() => setIsPublic(false)}
               />
-              <label htmlFor="private">Private</label>
+              <label htmlFor="private-radio">Private</label>
             </div>
           </div>
         </div>
@@ -209,6 +219,7 @@ const DeckUpdate = () => {
           {tagList.map((tag, index) => (
             <div key={index}>
               <input
+                id={`tag-input-${index}`}
                 type="text"
                 value={tag}
                 onChange={(e) => {
@@ -218,6 +229,7 @@ const DeckUpdate = () => {
                 }}
               />
               <button
+                id={`delete-tag-btn-${index}`}
                 type="button"
                 onClick={() => {
                   const newTags = tagList.filter((_, i) => i !== index);
@@ -230,7 +242,11 @@ const DeckUpdate = () => {
           ))}
         </div>
         <div className={style.deck_add_tag}>
-          <button type="button" onClick={() => setTagList([...tagList, ""])}>
+          <button
+            id="add-tag-btn"
+            type="button"
+            onClick={() => setTagList([...tagList, ""])}
+          >
             + Add Tag
           </button>
         </div>
@@ -238,7 +254,6 @@ const DeckUpdate = () => {
 
       <hr />
 
-      {/* Cards - แสดงทีละใบ */}
       <div className={style.deck_card}>
         <h3>
           Card {currentCardIndex + 1} of {cards.length}
@@ -248,6 +263,7 @@ const DeckUpdate = () => {
             <label>
               Front:
               <textarea
+                id="front-card-input"
                 value={cards[currentCardIndex].frontCard}
                 onChange={(e) =>
                   handleCardChange(
@@ -262,6 +278,7 @@ const DeckUpdate = () => {
             <label>
               Back:
               <textarea
+                id="back-card-input"
                 value={cards[currentCardIndex].backCard}
                 onChange={(e) =>
                   handleCardChange(currentCardIndex, "backCard", e.target.value)
@@ -274,6 +291,7 @@ const DeckUpdate = () => {
 
       <div className={style.deck_update_btn}>
         <button
+          id="previous-btn"
           onClick={() =>
             setCurrentCardIndex((prevIndex) => Math.max(0, prevIndex - 1))
           }
@@ -282,6 +300,7 @@ const DeckUpdate = () => {
           Previous
         </button>
         <button
+          id="next-btn"
           onClick={() =>
             setCurrentCardIndex((prevIndex) =>
               Math.min(cards.length - 1, prevIndex + 1)
@@ -291,12 +310,19 @@ const DeckUpdate = () => {
         >
           Next
         </button>
-        {/* 2. เพิ่มปุ่ม "Delete Card" */}
-        <button onClick={deleteCard} disabled={cards.length === 0}>
+        <button
+          id="delete-card-btn"
+          onClick={deleteCard}
+          disabled={cards.length === 0}
+        >
           ❌ Delete Card
         </button>
-        <button onClick={addCard}>+ Add Card</button>
-        <button onClick={handleSave}>Save</button>
+        <button id="add-card-btn" onClick={addCard}>
+          + Add Card
+        </button>
+        <button id="save-btn" onClick={handleSave}>
+          Save
+        </button>
       </div>
     </div>
   );

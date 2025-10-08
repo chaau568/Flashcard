@@ -3,6 +3,7 @@ package com.chaau568.flashcards.controller;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.catalina.connector.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.chaau568.flashcards.datatype.AddCardToDeckForm;
+import com.chaau568.flashcards.datatype.CardDeleteForm;
 import com.chaau568.flashcards.datatype.CardProgressUpdate;
 import com.chaau568.flashcards.datatype.CardUpdateForm;
 import com.chaau568.flashcards.datatype.DeckInfo;
@@ -31,10 +33,12 @@ import com.chaau568.flashcards.service.CardService;
 import com.chaau568.flashcards.service.DeckService;
 import com.chaau568.flashcards.service.UserService;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
-@CrossOrigin(origins = "http://localhost:5137")
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/flashcard")
 
@@ -62,10 +66,30 @@ public class Controller {
     }
 
     // User
+    @GetMapping("/user/apihelper/get_user_id/")
+    public ResponseEntity<ApiResponseWithData> apiHelperGetUserFromSession(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+
+        if (session == null || session.getAttribute("userId") == null) {
+            throw new SessionNotFound("Session not found or Session expired.");
+        }
+
+        String userId = (String) session.getAttribute("userId");
+
+        ApiResponseWithData response = new ApiResponseWithData("Get userId successfully.", HttpStatus.OK.value(),
+                userId);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
     @PostMapping("/user/register")
-    public ResponseEntity<ApiResponse> createAccount(@RequestBody User newUser) {
+    public ResponseEntity<ApiResponseWithData> createAccount(@RequestBody User newUser) {
         userService.createAccount(newUser);
-        ApiResponse response = new ApiResponse("User created successfully.", HttpStatus.CREATED.value());
+
+        String newUserId = userService.getUserId(newUser.getUsername());
+
+        ApiResponseWithData response = new ApiResponseWithData("User created successfully.", HttpStatus.CREATED.value(),
+                newUserId);
+
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
@@ -73,9 +97,9 @@ public class Controller {
     public ResponseEntity<ApiResponse> login(@RequestBody Map<String, String> user, HttpServletRequest request) {
         String username = user.get("username");
         String password = user.get("password");
-        String userId = userService.getUserId(username);
         userService.login(username, password);
         HttpSession session = request.getSession(true);
+        String userId = userService.getUserId(username);
         session.setAttribute("userId", userId);
         session.setAttribute("username", username);
         ApiResponse response = new ApiResponse("User logined successfully.", HttpStatus.OK.value());
@@ -83,9 +107,34 @@ public class Controller {
     }
 
     @PostMapping("/user/logout")
-    public ResponseEntity<ApiResponse> logout(HttpSession session) {
+    public ResponseEntity<ApiResponse> logout(HttpServletRequest request, HttpServletResponse response) {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+
+        Cookie cookie = new Cookie("JSESSIONID", null);
+        cookie.setMaxAge(0);
+        cookie.setPath(request.getContextPath() + "/");
+        cookie.setHttpOnly(true);
+
+        response.addCookie(cookie);
+
+        ApiResponse responseBody = new ApiResponse("User logouted successfully.", HttpStatus.OK.value());
+        return new ResponseEntity<>(responseBody, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/user/delete/{userId}")
+    public ResponseEntity<ApiResponse> deleteAccount(HttpServletRequest request, @PathVariable String userId) {
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("userId") == null) {
+            throw new SessionNotFound("Session not found or Session expired.");
+        }
+
+        userService.deleteAccount(userId);
+
         session.invalidate();
-        ApiResponse response = new ApiResponse("User logouted successfully.", HttpStatus.OK.value());
+        ApiResponse response = new ApiResponse("User deleted successfully.", HttpStatus.OK.value());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -120,8 +169,7 @@ public class Controller {
         }
 
         String userId = (String) session.getAttribute("userId");
-        String deckId = userService.addOwnerDeck(userId, newDeck); // สร้าง deckId ใน ownerUser ก่อน แล้วค่อยสร้าง deck
-                                                                   // ที่หลัง
+        String deckId = deckService.createDeck(userId, newDeck);
 
         ApiResponseWithData response = new ApiResponseWithData("Deck created successfully.",
                 HttpStatus.CREATED.value(), deckId);
@@ -253,8 +301,25 @@ public class Controller {
         }
 
         List<Card> deckList = cardService.loadAllCardsFromOwnerDeckId(deckId);
-        ApiResponseWithData response = new ApiResponseWithData("Card updated successfully", HttpStatus.OK.value(),
+        ApiResponseWithData response = new ApiResponseWithData("Card updated successfully.", HttpStatus.OK.value(),
                 deckList);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/card/delete")
+    public ResponseEntity<ApiResponse> deleteCard(HttpServletRequest request, @RequestBody CardDeleteForm cardList) {
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("userId") == null) {
+            throw new SessionNotFound("Session not found or Session expired.");
+        }
+
+        String ownerDeckId = cardList.getOwnerDeckId();
+
+        for (String cardId : cardList.getCardId()) {
+            cardService.deleteCard(ownerDeckId, cardId);
+        }
+
+        ApiResponse response = new ApiResponse("Card deleted successfully.", HttpStatus.OK.value());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

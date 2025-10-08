@@ -12,6 +12,7 @@ interface ApiResponseWithData<T> {
 const Home = () => {
   const [flashcards, setFlashcards] = useState<TypeDeck[]>([]);
   const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -35,7 +36,7 @@ const Home = () => {
         const json: ApiResponseWithData<TypeDeck[]> = await response.json();
         setFlashcards(json.data); // ✅ ต้องเอาจาก json.data
       } catch (error) {
-        alert("Failed to fetch decks:" + error);
+        setErrorMessage("Failed to fetch decks: " + error);
       } finally {
         setLoading(false);
       }
@@ -56,19 +57,23 @@ const Home = () => {
   return (
     <div className={style.home_container}>
       {loading ? (
-        <p>Loading...</p>
+        <p id="loading-decks">Loading...</p>
+      ) : errorMessage ? (
+        <p id="error-message">{errorMessage}</p>
       ) : flashcards.length === 0 ? (
-        <p>No decks found.</p>
+        <p id="no-decks-found">No decks found.</p>
       ) : (
-        flashcards.map((flashcard) => (
-          <div
-            key={flashcard.id}
-            className={style.flashcard}
-            onClick={() => visitDeck(flashcard.id, flashcard.deckName)}
-          >
-            <h3>{flashcard.deckName}</h3>
-          </div>
-        ))
+        <div id="deck-list-container" className={style.deck_list_container}>
+          {flashcards.map((flashcard) => (
+            <div
+              key={flashcard.id}
+              className={style.flashcard}
+              onClick={() => visitDeck(flashcard.id, flashcard.deckName)}
+            >
+              <h3>{flashcard.deckName}</h3>
+            </div>
+          ))}
+        </div>
       )}
     </div>
   );

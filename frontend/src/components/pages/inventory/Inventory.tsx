@@ -12,6 +12,7 @@ interface ApiResponseWithData<T> {
 const Inventory = () => {
   const [flashcards, setFlashcards] = useState<TypeDeck[]>([]);
   const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const navigate = useNavigate();
   const [visitDeck, setVisitDeck] = useState<boolean>(false);
   const [addNewCard, setAddNewCard] = useState<boolean>(false);
@@ -39,7 +40,7 @@ const Inventory = () => {
         const json: ApiResponseWithData<TypeDeck[]> = await response.json();
         setFlashcards(json.data); // ✅ ต้องเอาจาก json.data
       } catch (error) {
-        alert("Failed to fetch decks:" + error);
+        setErrorMessage("Failed to fetch decks:" + error);
       } finally {
         setLoading(false);
       }
@@ -71,29 +72,35 @@ const Inventory = () => {
   return (
     <div className={style.inventory_container}>
       {loading ? (
-        <p>Loading...</p>
-      ) : flashcards.length === 0 ? (
-        <p>No decks found.</p>
+        <p id="loading-decks">Loading...</p>
+      ) : errorMessage ? (
+        <p id="error-message">{errorMessage}</p>
       ) : (
-        flashcards.map((flashcard) => (
-          <div
-            key={flashcard.id}
-            className={style.flashcard}
-            onClick={() => deckSelect(flashcard.id, flashcard.deckName)}
-          >
-            <h3>{flashcard.deckName}</h3>
+        <div id="deck-list-container" className={style.deck_list_container}>
+          {flashcards.length === 0 ? (
+            <p id="no-decks-found">No decks found.</p>
+          ) : (
+            flashcards.map((flashcard) => (
+              <div
+                key={flashcard.id}
+                className={style.flashcard}
+                onClick={() => deckSelect(flashcard.id, flashcard.deckName)}
+              >
+                <h3>{flashcard.deckName}</h3>
+              </div>
+            ))
+          )}
+          <div className={style.addNewCardContainer}>
+            <button
+              id="btn-add-new-card"
+              onClick={() => setAddNewCard(true)}
+              className={style.addNewCardButton}
+            >
+              New Flashcard
+            </button>
           </div>
-        ))
+        </div>
       )}
-
-      <div className={style.addNewCardContainer}>
-        <button
-          onClick={() => setAddNewCard(true)}
-          className={style.addNewCardButton}
-        >
-          New Flashcard
-        </button>
-      </div>
     </div>
   );
 };
