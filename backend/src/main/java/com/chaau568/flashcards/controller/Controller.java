@@ -267,6 +267,19 @@ public class Controller {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @GetMapping("/card/get_by_public_deck_id/{ownerId}")
+    public ResponseEntity<ApiResponseWithData> getAllCardsByPublicDeckId(HttpServletRequest request,
+            @PathVariable String ownerId) {
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("userId") == null) {
+            throw new SessionNotFound("Session not found or Session expired.");
+        }
+        List<Card> deckList = cardService.loadAllCardsFromOwnerDeckId(ownerId);
+        ApiResponseWithData response = new ApiResponseWithData("All Cards getted by owner deck id successfully.",
+                HttpStatus.OK.value(), deckList);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
     @PutMapping("/card/update")
     public ResponseEntity<ApiResponse> updateCard(HttpServletRequest request, @RequestBody CardUpdateForm updateCard) {
         HttpSession session = request.getSession(false);

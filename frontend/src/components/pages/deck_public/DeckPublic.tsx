@@ -71,7 +71,7 @@ const DeckPublic = () => {
     const fetchCards = async () => {
       try {
         const res = await fetch(
-          `http://localhost:8080/flashcard/card/get_by_deck_id/${deckId}`,
+          `http://localhost:8080/flashcard/card/get_by_public_deck_id/${deckId}`,
           {
             method: "GET",
             headers: { "Content-Type": "application/json" },
