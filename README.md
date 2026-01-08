@@ -3,8 +3,6 @@
 # ENG README (version English)
 
 ```md
-[อ่าน README ภาษาไทย](README_TH.md)
-
 # Flashcard Learning Platform
 
 A web-based platform for creating, sharing, and learning Flashcards.  
